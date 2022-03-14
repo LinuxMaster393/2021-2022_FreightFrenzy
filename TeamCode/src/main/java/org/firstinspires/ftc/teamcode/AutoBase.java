@@ -86,7 +86,9 @@ public abstract class AutoBase extends OpMode {
 
     private boolean bristlesOut;
 
-    HT16K33 display;
+    protected boolean exitOnLastCommand = true;
+
+    HT16K33[] displays;
 
     public void init() {
 
@@ -194,10 +196,8 @@ public abstract class AutoBase extends OpMode {
 
         setWheelPowersAndPositions();
 
-        telemetry.addData("rectY", largestRectangle.x);
-        telemetry.addData("rectX", largestRectangle.y);
-        telemetry.addData("rectArea", largestRectangle.area());
         telemetry.addData("barcodePos", barcodePos);
+        telemetry.addData("duckWheelTouch", duckWheelTouch.getState());
     }
 
     private void armRotate() {
@@ -315,10 +315,12 @@ public abstract class AutoBase extends OpMode {
         rightFrontPower = antiDiagonalPercent * currentCommand.power;
         leftBackPower = antiDiagonalPercent * -currentCommand.power;
 
-        if (Math.abs(leftFrontTargetPosition - leftFront.getCurrentPosition()) <= ENCODER_POSITION_TOLERANCE &&
-            Math.abs(leftBackTargetPosition - leftBack.getCurrentPosition()) <= ENCODER_POSITION_TOLERANCE &&
-            Math.abs(rightFrontTargetPosition - rightFront.getCurrentPosition()) <= ENCODER_POSITION_TOLERANCE &&
-            Math.abs(rightBackTargetPosition - rightBack.getCurrentPosition()) <= ENCODER_POSITION_TOLERANCE) {
+        if (currentCommand.constructorID == 0 && Math.abs(leftFrontTargetPosition - leftFront.getCurrentPosition()) <= ENCODER_POSITION_TOLERANCE &&
+                Math.abs(leftBackTargetPosition - leftBack.getCurrentPosition()) <= ENCODER_POSITION_TOLERANCE &&
+                Math.abs(rightFrontTargetPosition - rightFront.getCurrentPosition()) <= ENCODER_POSITION_TOLERANCE &&
+                Math.abs(rightBackTargetPosition - rightBack.getCurrentPosition()) <= ENCODER_POSITION_TOLERANCE) {
+            nextCommand();
+        } else if (currentCommand.constructorID == 1 && (duckWheelTouch.getState() || time > currentCommand.duration)) {
             nextCommand();
         }
     }
@@ -387,6 +389,13 @@ public abstract class AutoBase extends OpMode {
         rightBackPower = 0;
     }
 
+    private void stopWheelEncoders() {
+        leftFrontTargetPosition = leftFront.getCurrentPosition();
+        rightBackTargetPosition = rightBack.getCurrentPosition();
+        rightFrontTargetPosition = rightFront.getCurrentPosition();
+        leftBackTargetPosition = leftBack.getCurrentPosition();
+    }
+
     /**
      * Returns the error between the angle the gyroscope sensor reads, and the target angle.
      */
@@ -418,12 +427,13 @@ public abstract class AutoBase extends OpMode {
             currentCommand = currentCommands.get(0);
             currentCommands.remove(0);
             commandFirstLoop = true;
+            stopWheelEncoders();
             resetStartTime();
         } else if (!upstreamCommands.isEmpty()) {
             currentCommands = upstreamCommands.get(0);
             upstreamCommands.remove(0);
             nextCommand();
-        } else {
+        } else if (exitOnLastCommand) {
             requestOpModeStop();
         }
     }
@@ -434,9 +444,11 @@ public abstract class AutoBase extends OpMode {
 
     @Override
     public void stop() {
-        display.clear();
-        display.writeDisplay();
-        display.displayOff();
+        for (HT16K33 display : displays) {
+            display.clear();
+            display.writeDisplay();
+            display.displayOff();
+        }
     }
 
     protected abstract AllianceColor getAllianceColor();
