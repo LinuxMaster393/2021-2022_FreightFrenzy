@@ -26,7 +26,7 @@ public abstract class AutoDuck extends AutoBase {
                         new Move(.5, -45, 0.5),//Moves away from the wall
                         new BlueRed(
                                 new ArrayList<>(Arrays.asList(
-                                        new Move(1.65, -90, .5)//Strafes to the carousel
+                                        new Move(1.55, -90, .5)//Strafes to the carousel
                                 )),
                                 new ArrayList<>(Arrays.asList(
                                         new Turn(90),//Turns so the duck wheel faces the carousel
@@ -42,16 +42,18 @@ public abstract class AutoDuck extends AutoBase {
                                         new Turn(0)
                                 ))
                         ),//Turns back to straight
-                        new ArmExtend(.4),
+                        new ArmRotate(.35),//Deploys the arm
+                        new ArmExtend(.75),
+                        new ArmFullRetract(),
                         new LoadBarcodeCommands(//Raises the arm to the respective level
                                 new ArrayList<>(Arrays.asList(
-                                        new ArmRotate(.2)
+                                        new ArmRotate(.5)
                                 )),
                                 new ArrayList<>(Arrays.asList(
-                                        new ArmRotate(.45)
+                                        new ArmRotate(.75)
                                 )),
                                 new ArrayList<>(Arrays.asList(
-                                        new ArmRotate(.65)
+                                        new ArmRotate(.95)
                                 ))
                         ),//Loads the commands from detecting the barcode positions
                         new Move(4.25,90,.5),//Lines up with the alliance hub
@@ -59,9 +61,9 @@ public abstract class AutoDuck extends AutoBase {
                         new BristlesOut(),//spits the block out
                         new Pause(3),
                         new BristlesOut(),
-                        new Move(.5, 0,1.0),
+                        new Move(.5, 0,1),
                         new Turn(90),//Partially parks in the warehouse
-                        new Move(2,90,1.0),
+                        new Move(2,90,1),
                         new ArmExtend(.2)
                 )
         );

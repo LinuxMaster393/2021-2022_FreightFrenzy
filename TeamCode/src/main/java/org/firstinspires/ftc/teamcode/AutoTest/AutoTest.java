@@ -14,12 +14,10 @@ public class AutoTest extends AutoBase {
     protected AllianceColor getAllianceColor()  {
         return AllianceColor.BLUE;
     }
-    protected boolean exitOnLastCommand = true;
     protected ArrayList<Command> getCommands() {
         return new ArrayList<Command>(
                 Arrays.asList(
-                        //new DetectBarcodePosition(),\
-                        new Move(0.25, -90, 10)
+                        new Pause(100)
                 )
         );
     }

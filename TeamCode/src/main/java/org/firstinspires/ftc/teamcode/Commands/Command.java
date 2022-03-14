@@ -1,24 +1,20 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
+import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Brendan Clark on 09/24/2020 at 11:54 AM.
  */
 
-public class Command {
+public abstract class Command {
+    public abstract boolean start(Map<Class<? extends Subsystem>, Subsystem> subsystems,
+                                  Set<Class<? extends Subsystem>> activeSubsystems);
+    public abstract void update();
 
-    public ArrayList<Command> redCommands;
-    public ArrayList<Command> blueCommands;
-    public ArrayList<Command> leftCommands;
-    public ArrayList<Command> centerCommands;
-    public ArrayList<Command> rightCommands;
-    public double duration;
-    public double distance;
-    public double angle;
-    public double power;
-    public int position;
-    public int constructorID;
-
+    public abstract boolean isFinished();
+    public abstract void end();
 }

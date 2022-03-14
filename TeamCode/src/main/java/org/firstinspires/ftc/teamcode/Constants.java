@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
@@ -14,16 +12,16 @@ import androidx.annotation.FloatRange;
  */
 
 public class Constants {
-    protected static final double TICKS_PER_FOOT = 758.51;
+    public static final double TICKS_PER_FOOT = 758.51;
 
     @FloatRange(from=0.0, to=1.0)
     protected static final double CONTROLLER_TOLERANCE = 0.05;
     @FloatRange(from=0.0, to=1.0)
-    protected static final double ANGLE_ERROR_TOLERANCE = 0.05;
-    protected static final double ENCODER_POSITION_TOLERANCE = 100.0;
+    public static final double HEADING_ERROR_TOLERANCE = 0.05;
+    public static final double ENCODER_POSITION_TOLERANCE = 100.0;
 
-    protected static final double TURNING_ENCODER_POSITION_SCALAR = 20.0;
-    protected static final double TURNING_POWER_SCALAR = 1;
+    public static final double TURNING_ENCODER_POSITION_SCALAR = 20.0;
+    public static final double TURNING_POWER_SCALAR = 1;
 
     @FloatRange(from=0.0, to=1.0)
     protected static final double BRISTLES_POWER_IN = 1;
@@ -34,7 +32,7 @@ public class Constants {
     protected static final double ARM_SPEED = 0.75;
     @FloatRange(from=0.0, to=1.0)
     protected static final double AUTO_DUCK_SPEED = .14;
-    public static final double MAX_ARM_EXTENSION = -10500;
+    public static final double MAX_ARM_EXTENSION = -7500;
     public static final double MAX_ARM_ROTATION = -7500;
 
     public enum BarcodePos {
@@ -45,30 +43,19 @@ public class Constants {
 
     }
 
-    public enum FreightType {
-        NONE,
-        DUCK,
-        BALL,
-        LIGHT,
-        MEDIUM,
-        HEAVY
-    }
-
     public enum AllianceColor {
 
-        BLUE(1, -90,.625, RevBlinkinLedDriver.BlinkinPattern.LIGHT_CHASE_BLUE),
-        RED(-1, 90,.45, RevBlinkinLedDriver.BlinkinPattern.LIGHT_CHASE_RED);
+        BLUE(1, -90,.625),
+        RED(-1, 90,.45);
 
         public final int direction;
         protected final double angleOffset;
         public final double distanceToDucks;
-        protected final RevBlinkinLedDriver.BlinkinPattern pattern;
 
-        AllianceColor(int direction, double angleOffset, double distanceToDucks, RevBlinkinLedDriver.BlinkinPattern pattern) {
+        AllianceColor(int direction, double angleOffset, double distanceToDucks) {
             this.direction = direction;
             this.angleOffset = Math.toRadians(angleOffset);
             this.distanceToDucks = distanceToDucks;
-            this.pattern = pattern;
         }
 
     }
