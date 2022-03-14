@@ -4,6 +4,8 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADI
 import static org.firstinspires.ftc.teamcode.Constants.TURNING_ENCODER_POSITION_SCALAR;
 import static org.firstinspires.ftc.teamcode.Constants.TURNING_POWER_SCALAR;
 
+import androidx.annotation.Size;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -14,8 +16,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-/**
+/*
  * Created by Brendan Clark on 02/27/2022 at 10:34 AM.
+ */
+
+/**
+ * Subsystem for controlling the drive system. Note: also contains the IMU.
+ * @see Subsystem
  */
 
 public class Drive extends Subsystem {
@@ -31,6 +38,14 @@ public class Drive extends Subsystem {
     private double leftFrontPower, rightFrontPower, leftBackPower, rightBackPower;
     private double leftFrontTargetPosition, rightFrontTargetPosition, leftBackTargetPosition, rightBackTargetPosition;
 
+    /**
+     * Initialize the drive system.
+     * @param hardwareMap The hardware map containing four DC Motors named "leftFront", "rightFront",
+     *                    "leftBack", and "rightBack" respectively, and a BNO055IMU named "imu".
+     * @param telemetry The telemetry object for sending diagnostic information back to the driver station.
+     * @see HardwareMap
+     * @see Telemetry
+     */
     public Drive (HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
 
@@ -55,6 +70,9 @@ public class Drive extends Subsystem {
         imu.initialize(imuParameters);
     }
 
+    /**
+     * Turns the robot to attempt to maintain the robot's heading.
+     */
     public void gyroCorrection() {
         fetchAngleError();
 
@@ -73,6 +91,9 @@ public class Drive extends Subsystem {
         );
     }
 
+    /**
+     * Get the error between the current heading and the target heading and save it in headingError.
+     */
     private void fetchAngleError() {
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, RADIANS);
         headingError = targetHeading - angles.firstAngle;
@@ -80,7 +101,14 @@ public class Drive extends Subsystem {
         headingError = ((((headingError - Math.PI) % (2 * Math.PI)) + (2 * Math.PI)) % (2 * Math.PI)) - Math.PI;
     }
 
-    public void setBasePowers(double... powers) {
+    /**
+     * Sets the values of the motor power control variables and execute
+     * {@linkplain Drive#setMotorPowers(double...)} with those values.
+     * @param powers Four doubles corresponding to the leftFront, rightFront, leftBack, and rightBack
+     *               motors.
+     * @see Drive#setMotorPowers(double...)
+     */
+    public void setBasePowers(@Size(4) double... powers) {
         leftFrontPower = powers[0];
         rightFrontPower = powers[1];
         leftBackPower = powers[2];
@@ -89,7 +117,13 @@ public class Drive extends Subsystem {
         setMotorPowers(powers);
     }
 
-    public void setBaseTargetPositions(double... positions) {
+    /**
+     * Sets the values of the motor encoder control variables and execute
+     * {@linkplain Drive#setTargetPositions(double...)} with those values.
+     * @param positions Four doubles corresponding to the leftFront, rightFront, leftBack, and rightBack
+     *                  motors.
+     */
+    public void setBaseTargetPositions(@Size(4) double... positions) {
         leftFrontTargetPosition = positions[0];
         rightFrontTargetPosition = positions[1];
         leftBackTargetPosition = positions[2];
@@ -98,24 +132,47 @@ public class Drive extends Subsystem {
         setTargetPositions(positions);
     }
 
+    /**
+     * Sets the targetHeading of the robot. Used in gyro correction.
+     * @param targetHeading The heading to adjust the robot's heading to.
+     * @see Drive#gyroCorrection()
+     */
     public void setTargetHeading (double targetHeading) {
         this.targetHeading = targetHeading;
     }
 
-    public void setMotorPowers(double... powers) {
+    /**
+     * Sets the raw motors powers to the values passed. Please use {@linkplain Drive#setBasePowers(double...)} instead.
+     * @param powers Four doubles corresponding to the leftFront, rightFront, leftBack, and rightBack
+     *               motors.
+     * @see Drive#setBasePowers(double...)
+     */
+    public void setMotorPowers(@Size(4) double... powers) {
         leftFront.setPower(powers[0]);
         rightFront.setPower(powers[1]);
         leftBack.setPower(powers[2]);
         rightBack.setPower(powers[3]);
     }
 
-    public void setTargetPositions(double... positions) {
+    /**
+     * Sets the raw motors target positions to the values passed. Please use {@linkplain Drive#setBaseTargetPositions(double...)} instead.
+     * @param positions Four doubles corresponding to the leftFront, rightFront, leftBack, and rightBack
+     *                  motors.
+     * @see Drive#setBaseTargetPositions(double...)
+     */
+    public void setTargetPositions(@Size(4) double... positions) {
         leftFront.setTargetPosition((int) Math.round(positions[0]));
         rightFront.setTargetPosition((int) Math.round(positions[1]));
         leftBack.setTargetPosition((int) Math.round(positions[2]));
         rightBack.setTargetPosition((int) Math.round(positions[3]));
     }
 
+    /**
+     * Gets the current positions of all the motors.
+     * @return A double[] with values corresponding to the leftFront, rightFront, leftBack, and rightBack
+     *         motors.
+     */
+    @Size(4)
     public double[] getMotorPositions() {
         return new double[]{
                 leftFront.getCurrentPosition(),
@@ -125,6 +182,12 @@ public class Drive extends Subsystem {
         };
     }
 
+    /**
+     * Gets the target positions of all the motors.
+     * @return A double[] with values corresponding to the leftFront, rightFront, leftBack, and rightBack
+     *         motors.
+     */
+    @Size(4)
     public double[] getTargetPositions() {
         return new double[] {
                 leftFrontTargetPosition,
@@ -134,10 +197,18 @@ public class Drive extends Subsystem {
         };
     }
 
+    /**
+     * Returns the current heading of the robot.
+     * @return The current heading of the robot.
+     */
     public double getHeading() {
         return currentHeading;
     }
 
+    /**
+     * Returns the error between the target heading and the current heading.
+     * @return The error between the target heading and the current heading.
+     */
     public double getHeadingError() {
         return headingError;
     }

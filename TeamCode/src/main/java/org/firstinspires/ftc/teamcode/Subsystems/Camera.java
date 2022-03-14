@@ -14,13 +14,24 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-/**
+/*
  * Created by Brendan Clark on 02/27/2022 at 10:35 AM.
  */
 
+/**
+ * Subsystem for controlling the camera.
+ * @see Subsystem
+ */
 public class Camera extends Subsystem {
     private OpenCvWebcam webcam;
 
+    /**
+     * Initialize the camera and OpenCV pipeline.
+     * @param hardwareMap The hardware map containing a Webcam named "Webcam 1".
+     * @param telemetry The telemetry object for sending diagnostic information back to the driver station.
+     * @see HardwareMap
+     * @see Telemetry
+     */
     public Camera(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
 
