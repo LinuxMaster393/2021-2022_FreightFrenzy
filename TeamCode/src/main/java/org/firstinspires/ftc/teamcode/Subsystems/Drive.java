@@ -22,6 +22,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 /**
  * Subsystem for controlling the drive system. Note: also contains the IMU.
+ *
  * @see Subsystem
  */
 
@@ -40,22 +41,23 @@ public class Drive extends Subsystem {
 
     /**
      * Initialize the drive system.
+     *
      * @param hardwareMap The hardware map containing four DC Motors named "leftFront", "rightFront",
      *                    "leftBack", and "rightBack" respectively, and a BNO055IMU named "imu".
-     * @param telemetry The telemetry object for sending diagnostic information back to the driver station.
+     * @param telemetry   The telemetry object for sending diagnostic information back to the driver station.
      * @see HardwareMap
      * @see Telemetry
      */
-    public Drive (HardwareMap hardwareMap, Telemetry telemetry) {
+    public Drive(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
 
-        motors = new DcMotorEx[] {
+        motors = new DcMotorEx[]{
                 leftFront = hardwareMap.get(DcMotorEx.class, "leftFront"),
                 rightFront = hardwareMap.get(DcMotorEx.class, "rightFront"),
                 leftBack = hardwareMap.get(DcMotorEx.class, "leftBack"),
                 rightBack = hardwareMap.get(DcMotorEx.class, "rightBack")
         };
-        for(DcMotorEx motor : motors) {
+        for (DcMotorEx motor : motors) {
             motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motor.setTargetPosition(0);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -77,10 +79,10 @@ public class Drive extends Subsystem {
         fetchAngleError();
 
         setTargetPositions(
-                 leftFrontTargetPosition + headingError * TURNING_ENCODER_POSITION_SCALAR,
-                 rightFrontTargetPosition + headingError * TURNING_ENCODER_POSITION_SCALAR,
-                 leftBackTargetPosition + headingError * TURNING_ENCODER_POSITION_SCALAR,
-                 rightBackTargetPosition + headingError * TURNING_ENCODER_POSITION_SCALAR
+                leftFrontTargetPosition + headingError * TURNING_ENCODER_POSITION_SCALAR,
+                rightFrontTargetPosition + headingError * TURNING_ENCODER_POSITION_SCALAR,
+                leftBackTargetPosition + headingError * TURNING_ENCODER_POSITION_SCALAR,
+                rightBackTargetPosition + headingError * TURNING_ENCODER_POSITION_SCALAR
         );
 
         setMotorPowers(
@@ -104,6 +106,7 @@ public class Drive extends Subsystem {
     /**
      * Sets the values of the motor power control variables and execute
      * {@linkplain Drive#setMotorPowers(double...)} with those values.
+     *
      * @param powers Four doubles corresponding to the leftFront, rightFront, leftBack, and rightBack
      *               motors.
      * @see Drive#setMotorPowers(double...)
@@ -120,6 +123,7 @@ public class Drive extends Subsystem {
     /**
      * Sets the values of the motor encoder control variables and execute
      * {@linkplain Drive#setTargetPositions(double...)} with those values.
+     *
      * @param positions Four doubles corresponding to the leftFront, rightFront, leftBack, and rightBack
      *                  motors.
      */
@@ -134,20 +138,22 @@ public class Drive extends Subsystem {
 
     /**
      * Sets the targetHeading of the robot. Used in gyro correction.
+     *
      * @param targetHeading The heading to adjust the robot's heading to.
      * @see Drive#gyroCorrection()
      */
-    public void setTargetHeading (double targetHeading) {
+    public void setTargetHeading(double targetHeading) {
         this.targetHeading = targetHeading;
     }
 
     /**
      * Sets the raw motors powers to the values passed. Please use {@linkplain Drive#setBasePowers(double...)} instead.
+     *
      * @param powers Four doubles corresponding to the leftFront, rightFront, leftBack, and rightBack
      *               motors.
      * @see Drive#setBasePowers(double...)
      */
-    public void setMotorPowers(@Size(4) double... powers) {
+    public void setMotorPowers(@Size(min = 4) double... powers) {
         leftFront.setPower(powers[0]);
         rightFront.setPower(powers[1]);
         leftBack.setPower(powers[2]);
@@ -156,11 +162,12 @@ public class Drive extends Subsystem {
 
     /**
      * Sets the raw motors target positions to the values passed. Please use {@linkplain Drive#setBaseTargetPositions(double...)} instead.
+     *
      * @param positions Four doubles corresponding to the leftFront, rightFront, leftBack, and rightBack
      *                  motors.
      * @see Drive#setBaseTargetPositions(double...)
      */
-    public void setTargetPositions(@Size(4) double... positions) {
+    public void setTargetPositions(@Size(min = 4) double... positions) {
         leftFront.setTargetPosition((int) Math.round(positions[0]));
         rightFront.setTargetPosition((int) Math.round(positions[1]));
         leftBack.setTargetPosition((int) Math.round(positions[2]));
@@ -169,8 +176,9 @@ public class Drive extends Subsystem {
 
     /**
      * Gets the current positions of all the motors.
+     *
      * @return A double[] with values corresponding to the leftFront, rightFront, leftBack, and rightBack
-     *         motors.
+     * motors.
      */
     @Size(4)
     public double[] getMotorPositions() {
@@ -184,12 +192,13 @@ public class Drive extends Subsystem {
 
     /**
      * Gets the target positions of all the motors.
+     *
      * @return A double[] with values corresponding to the leftFront, rightFront, leftBack, and rightBack
-     *         motors.
+     * motors.
      */
     @Size(4)
     public double[] getTargetPositions() {
-        return new double[] {
+        return new double[]{
                 leftFrontTargetPosition,
                 rightFrontTargetPosition,
                 leftBackTargetPosition,
@@ -199,6 +208,7 @@ public class Drive extends Subsystem {
 
     /**
      * Returns the current heading of the robot.
+     *
      * @return The current heading of the robot.
      */
     public double getHeading() {
@@ -207,6 +217,7 @@ public class Drive extends Subsystem {
 
     /**
      * Returns the error between the target heading and the current heading.
+     *
      * @return The error between the target heading and the current heading.
      */
     public double getHeadingError() {

@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  * Base class for all subsystems of the robot.
  * Each subsystem is used to control a part of the robot, like the drive system or the arm system,
  * and will be passed to a Command on the first loop of that command.
+ *
  * @see org.firstinspires.ftc.teamcode.Commands.Command
  */
 public abstract class Subsystem {

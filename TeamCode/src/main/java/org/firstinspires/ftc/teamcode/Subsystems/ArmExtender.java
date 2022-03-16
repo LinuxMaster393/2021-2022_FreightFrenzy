@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.SensorDigitalTouch;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /*
@@ -14,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
  * Subsystem for controlling the arm extension system.
+ *
  * @see Subsystem
  */
 public class ArmExtender extends Subsystem {
@@ -22,13 +22,14 @@ public class ArmExtender extends Subsystem {
 
     /**
      * Initialize the arm extension system.
+     *
      * @param hardwareMap The hardware map containing a DC Motor named "armExtender" and
      *                    a DigitalChannel named "armTouch".
-     * @param telemetry The telemetry object for sending diagnostic information back to the driver station.
+     * @param telemetry   The telemetry object for sending diagnostic information back to the driver station.
      * @see HardwareMap
      * @see Telemetry
      */
-    public ArmExtender (HardwareMap hardwareMap, Telemetry telemetry) {
+    public ArmExtender(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
 
         armExtender = hardwareMap.get(DcMotorEx.class, "armExtender");
@@ -44,7 +45,8 @@ public class ArmExtender extends Subsystem {
 
     /**
      * Return the state of the arm limit switch.
-     * @return armExtenderTouch.getState()
+     *
+     * @return The current state of the channel.
      * @see DigitalChannel#getState()
      */
     public boolean isRetracted() {
@@ -53,6 +55,7 @@ public class ArmExtender extends Subsystem {
 
     /**
      * Zeroes the arm if the limit switch is pressed.
+     *
      * @return Whether the arm was zeroed or not.
      */
     public boolean zero() {
@@ -69,6 +72,7 @@ public class ArmExtender extends Subsystem {
      * Sets the power level of the arm, expressed as a fraction of the maximum possible
      * power / speed supported according to the run mode in which the motor is operating.
      * Setting a power level of zero will stop the arm.
+     *
      * @param power The new power level of the arm, a value in the range [-1.0, 1.0]
      * @see DcMotorEx#setPower(double)
      * @see ArmExtender#getPower()
@@ -82,6 +86,7 @@ public class ArmExtender extends Subsystem {
      * then actively hold thereat. This behavior is similar to the operation of a servo.
      * The maximum speed at which this advance or retreat occurs is governed by the power level
      * currently set on the motor.
+     *
      * @param targetPosition The desired encoder target position.
      * @see DcMotorEx#setTargetPosition(int)
      * @see ArmExtender#getCurrentPosition()
@@ -93,6 +98,7 @@ public class ArmExtender extends Subsystem {
 
     /**
      * Returns the current configured power level of the arm.
+     *
      * @return The current level of the motor, a value in the interval [0.0, 1.0]
      * @see DcMotorEx#getPower()
      * @see ArmExtender#setPower(double)
@@ -105,6 +111,7 @@ public class ArmExtender extends Subsystem {
      * Returns the current reading of the encoder on the arm. The units for this reading,
      * that is, the number of ticks per revolution, are specific to the motor/encoder,
      * and thus are not specified here.
+     *
      * @return The current reading of the encoder for the arm
      * @see DcMotorEx#getCurrentPosition()
      * @see ArmExtender#setTargetPosition(int)
@@ -116,6 +123,7 @@ public class ArmExtender extends Subsystem {
 
     /**
      * Returns the current target encoder position for the arm.
+     *
      * @return The current target encoder position for the arm.
      * @see DcMotorEx#getTargetPosition()
      * @see ArmExtender#setTargetPosition(int)
@@ -127,6 +135,7 @@ public class ArmExtender extends Subsystem {
 
     /**
      * Stops the arm from moving by setting the target position to the current position.
+     *
      * @see ArmExtender#setTargetPosition(int)
      * @see ArmExtender#getCurrentPosition()
      */

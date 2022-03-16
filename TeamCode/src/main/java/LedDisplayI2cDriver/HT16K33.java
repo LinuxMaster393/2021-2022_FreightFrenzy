@@ -1,6 +1,19 @@
 package LedDisplayI2cDriver;
 
-import java.util.Arrays;
+import static LedDisplayI2cDriver.Constants.ADDRESS_I2C_DEFAULT;
+import static LedDisplayI2cDriver.Constants.BLINK_RATE_DEFAULT;
+import static LedDisplayI2cDriver.Constants.BRIGHTNESS_DEFAULT;
+import static LedDisplayI2cDriver.Constants.BYTE_LENGTH;
+import static LedDisplayI2cDriver.Constants.CHARACTERS;
+import static LedDisplayI2cDriver.Constants.CHARACTER_HEIGHT;
+import static LedDisplayI2cDriver.Constants.CHARACTER_WIDTH;
+import static LedDisplayI2cDriver.Constants.Command;
+import static LedDisplayI2cDriver.Constants.DEFAULT_LINE_LENGTH;
+import static LedDisplayI2cDriver.Constants.DISPLAY_HEIGHT;
+import static LedDisplayI2cDriver.Constants.DISPLAY_WIDTH;
+import static LedDisplayI2cDriver.Constants.FONT_COLOR_DEFAULT;
+import static LedDisplayI2cDriver.Constants.LEADING;
+import static LedDisplayI2cDriver.Constants.TRACKING;
 
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cAddrConfig;
@@ -9,9 +22,7 @@ import com.qualcomm.robotcore.hardware.I2cDeviceSynchDevice;
 import com.qualcomm.robotcore.hardware.configuration.annotations.DeviceProperties;
 import com.qualcomm.robotcore.hardware.configuration.annotations.I2cDeviceType;
 
-import org.jetbrains.annotations.NotNull;
-
-import static LedDisplayI2cDriver.Constants.*;
+import java.util.Arrays;
 
 @I2cDeviceType
 @DeviceProperties(name = "HT16K33 8x8 LED Display", xmlTag = "HT16K33")
@@ -154,22 +165,30 @@ public class HT16K33 extends I2cDeviceSynchDevice<I2cDeviceSynch> implements I2c
      */
     public void displayOff() {
         displayOn = false;
-        write8(Command.DISPLAY_SETUP, (byte)(blinkRate * 2 + boolToByte(true)), (byte)0);
+        write8(Command.DISPLAY_SETUP, (byte) (blinkRate * 2 + boolToByte(true)), (byte) 0);
     }
 
     /**
      * Clears the display buffer.
      */
     public void clear() {
-        Arrays.fill(displayBuffer, (byte)0);
+        Arrays.fill(displayBuffer, (byte) 0);
+    }
+
+    /**
+     * Fills the display buffer.
+     */
+    public void fill() {
+        Arrays.fill(displayBuffer, (byte) 0xff);
     }
 
     /**
      * Configures the offset of the displays rotation.
+     *
      * @param rotation indicated rotation; accepts 0-3 otherwise defaults to 0
      */
     public void setRotationOffset(int rotation) {
-        if(rotation >= 0 && rotation <= 3) {
+        if (rotation >= 0 && rotation <= 3) {
             rotationOffset = rotation;
         } else {
             rotationOffset = 0;
