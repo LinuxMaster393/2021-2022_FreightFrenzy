@@ -32,11 +32,10 @@ public abstract class Command {
      *                         Used to make sure the subsystem is available to be controlled.
      * @return Whether start has run correctly.
      */
-    public abstract boolean start(Map<Class<? extends Subsystem>, Subsystem> subsystems,
-                                  Set<Class<? extends Subsystem>> activeSubsystems);
+    public abstract boolean start(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems);
 
     /**
-     * Executed once each loop after {@link Command#start(Map, Set)} has successfully run once.
+     * Executed once each loop after {@link Command#start(Map)} has successfully run once.
      */
     public abstract void update();
 

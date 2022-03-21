@@ -18,10 +18,9 @@ public class Turn extends Command {
     double heading;
 
     Drive drive;
-    private static final Set<Class<? extends Subsystem>> neededSubsystems = new HashSet<>(Arrays.asList(
+    private static final Set<Class<? extends Subsystem>> requiredSubsystems = new HashSet<>(Arrays.asList(
             Drive.class
     ));
-    private boolean subsystemsAvailable;
 
     public Turn(double heading) {
         this.heading = Math.toRadians(heading);
@@ -29,8 +28,9 @@ public class Turn extends Command {
 
     public boolean start(Map<Class<? extends Subsystem>, Subsystem> subsystems,
                          Set<Class<? extends Subsystem>> activeSubsystems) {
-        for (Class<? extends Subsystem> subsystem : neededSubsystems) {
-            subsystemsAvailable = subsystemsAvailable || activeSubsystems.add(subsystem);
+        boolean subsystemsAvailable = true;
+        for (Class<? extends Subsystem> subsystem : requiredSubsystems) {
+            subsystemsAvailable = subsystemsAvailable && activeSubsystems.add(subsystem);
         }
 
         if (subsystemsAvailable) {

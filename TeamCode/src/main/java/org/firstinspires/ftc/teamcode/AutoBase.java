@@ -91,6 +91,7 @@ public abstract class AutoBase extends OpMode {
     HT16K33[] displays;
 
     public void init() {
+        time
 
         allianceColor = getAllianceColor();
         currentCommands = getCommands();
@@ -436,6 +437,7 @@ public abstract class AutoBase extends OpMode {
         } else if (exitOnLastCommand) {
             requestOpModeStop();
         }
+        time
     }
 
     public static double getTargetAngle() {

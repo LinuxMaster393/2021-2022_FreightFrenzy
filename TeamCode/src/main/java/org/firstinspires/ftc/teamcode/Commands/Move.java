@@ -6,14 +6,10 @@ import static org.firstinspires.ftc.teamcode.Constants.TICKS_PER_FOOT;
 
 import androidx.annotation.FloatRange;
 
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.MotionDetection;
 import org.firstinspires.ftc.teamcode.AutoBase;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
@@ -21,10 +17,9 @@ import java.util.Set;
 
 public class Move extends Command {
     Drive drive;
-    private static final Set<Class<? extends Subsystem>> neededSubsystems = new HashSet<>(Arrays.asList(
+    private static final Set<Class<? extends Subsystem>> requiredSubystems = new HashSet<>(Arrays.asList(
             Drive.class
     ));
-    private boolean subsystemsAvailable;
 
     double distance, angle, power;
     double mainDiagonalPercent, antiDiagonalPercent;
@@ -43,8 +38,9 @@ public class Move extends Command {
 
     public boolean start(Map<Class<? extends Subsystem>, Subsystem> subsystems,
                          Set<Class<? extends Subsystem>> activeSubsystems) {
-        for(Class<? extends Subsystem> subsystem : neededSubsystems) {
-            subsystemsAvailable = subsystemsAvailable || activeSubsystems.add(subsystem);
+        boolean subsystemsAvailable = true;
+        for(Class<? extends Subsystem> subsystem : requiredSubystems) {
+            subsystemsAvailable = subsystemsAvailable && activeSubsystems.add(subsystem);
         }
 
         if(subsystemsAvailable) {

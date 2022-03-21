@@ -16,8 +16,6 @@ import java.util.Set;
 
 public class ParallelCommand extends Command {
     final private ArrayList<Command> commands;
-    Map<Class<? extends Subsystem>, Subsystem> subsystems;
-    Set<Class<? extends Subsystem>> activeSubsystems;
 
     public ParallelCommand (Command... commands) {
         this.commands = new ArrayList<>(Arrays.asList(commands));
@@ -25,8 +23,6 @@ public class ParallelCommand extends Command {
 
     public boolean start(Map<Class<? extends Subsystem>, Subsystem> subsystems,
                          Set<Class<? extends Subsystem>> activeSubsystems) {
-        this.subsystems = subsystems;
-        this.activeSubsystems = activeSubsystems;
         Iterator<Command> i = commands.iterator();
         while (i.hasNext()) {
             Command command = i.next();
@@ -34,7 +30,7 @@ public class ParallelCommand extends Command {
                 i.remove();
             }
         }
-        return isFinished();
+        return !isFinished();
     }
 
     public void update() {
