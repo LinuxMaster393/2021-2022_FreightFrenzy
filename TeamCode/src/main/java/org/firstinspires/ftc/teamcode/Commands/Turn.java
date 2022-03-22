@@ -26,19 +26,16 @@ public class Turn extends Command {
         this.heading = Math.toRadians(heading);
     }
 
-    public boolean start(Map<Class<? extends Subsystem>, Subsystem> subsystems,
-                         Set<Class<? extends Subsystem>> activeSubsystems) {
+    public boolean start(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
         boolean subsystemsAvailable = true;
         for (Class<? extends Subsystem> subsystem : requiredSubsystems) {
-            subsystemsAvailable = subsystemsAvailable && activeSubsystems.add(subsystem);
+            if (subsystemsAvailable) subsystemsAvailable = availableSubsystems.containsKey(subsystem);
+            else return false;
         }
 
-        if (subsystemsAvailable) {
-            drive = (Drive) subsystems.get(Drive.class);
-            drive.setTargetHeading(heading * allianceColor.direction);
-            return true;
-        }
-        return false;
+        drive = (Drive) availableSubsystems.remove(Drive.class);
+        drive.setTargetHeading(heading * allianceColor.direction);
+        return true;
     }
 
     public void update() {}
@@ -47,5 +44,7 @@ public class Turn extends Command {
         return Math.abs(drive.getHeadingError()) < HEADING_ERROR_TOLERANCE;
     }
 
-    public void end() {}
+    public void end(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
+        availableSubsystems.put(Drive.class, drive);
+    }
 }

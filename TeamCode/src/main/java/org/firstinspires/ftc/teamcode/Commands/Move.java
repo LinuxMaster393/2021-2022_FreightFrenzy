@@ -17,7 +17,7 @@ import java.util.Set;
 
 public class Move extends Command {
     Drive drive;
-    private static final Set<Class<? extends Subsystem>> requiredSubystems = new HashSet<>(Arrays.asList(
+    private static final Set<Class<? extends Subsystem>> requiredSubsystems = new HashSet<>(Arrays.asList(
             Drive.class
     ));
 
@@ -36,47 +36,46 @@ public class Move extends Command {
         this.power = power;
     }
 
-    public boolean start(Map<Class<? extends Subsystem>, Subsystem> subsystems,
-                         Set<Class<? extends Subsystem>> activeSubsystems) {
+    public boolean start(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
         boolean subsystemsAvailable = true;
-        for(Class<? extends Subsystem> subsystem : requiredSubystems) {
-            subsystemsAvailable = subsystemsAvailable && activeSubsystems.add(subsystem);
+        for (Class<? extends Subsystem> subsystem : requiredSubsystems) {
+            if (subsystemsAvailable) subsystemsAvailable = availableSubsystems.containsKey(subsystem);
+            else return false;
         }
 
-        if(subsystemsAvailable) {
-            drive = (Drive) subsystems.get(Drive.class);
+        drive = (Drive) availableSubsystems.remove(Drive.class);
 
-            double targetPosition = distance * TICKS_PER_FOOT;
-            /*Subtracts the robot's current angle from the command angle so that it travels globally
-            rather than relative to the robot, then rotates it 45 degrees so that the components align
-            with the wheels*/
-            double holonomicAngle = angle * allianceColor.direction - drive.getHeading() + (Math.PI / 4);
+        double targetPosition = distance * TICKS_PER_FOOT;
 
-            //the main diagonal is the diagonal from top left to bottom right
-            mainDiagonalPercent = Math.cos(holonomicAngle);
-            //the anti-diagonal is the diagonal from topRight to bottomLeft
-            antiDiagonalPercent = Math.sin(holonomicAngle);
+        /*Subtracts the robot's current angle from the command angle so that it travels globally
+        rather than relative to the robot, then rotates it 45 degrees so that the components align
+        with the wheels*/
+        double holonomicAngle = angle * allianceColor.direction - drive.getHeading() + (Math.PI / 4);
 
-            double mainDiagonalTargetPosition = targetPosition * mainDiagonalPercent;
-            double antiDiagonalTargetPosition = targetPosition * antiDiagonalPercent;
+        //the main diagonal is the diagonal from top left to bottom right
+        mainDiagonalPercent = Math.cos(holonomicAngle);
 
-            drive.setBaseTargetPositions(
-                    -mainDiagonalTargetPosition,
-                    antiDiagonalTargetPosition,
-                    -antiDiagonalTargetPosition,
-                    mainDiagonalTargetPosition
-            );
+        //the anti-diagonal is the diagonal from topRight to bottomLeft
+        antiDiagonalPercent = Math.sin(holonomicAngle);
 
-            drive.setBasePowers(
-                    -mainDiagonalPercent * power,
-                    antiDiagonalPercent * power,
-                    -antiDiagonalPercent * power,
-                    mainDiagonalPercent * power
-            );
+        double mainDiagonalTargetPosition = targetPosition * mainDiagonalPercent;
+        double antiDiagonalTargetPosition = targetPosition * antiDiagonalPercent;
 
-            return true;
-        }
-        return false;
+        drive.setBaseTargetPositions(
+                -mainDiagonalTargetPosition,
+                antiDiagonalTargetPosition,
+                -antiDiagonalTargetPosition,
+                mainDiagonalTargetPosition
+        );
+
+        drive.setBasePowers(
+                -mainDiagonalPercent * power,
+                antiDiagonalPercent * power,
+                -antiDiagonalPercent * power,
+                mainDiagonalPercent * power
+        );
+
+        return true;
     }
 
     public void update() {}
@@ -94,7 +93,8 @@ public class Move extends Command {
         return isFinished;
     }
 
-    public void end() {
+    public void end(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
         drive.setBasePowers(0, 0, 0, 0);
+        availableSubsystems.put(Drive.class, drive);
     }
 }

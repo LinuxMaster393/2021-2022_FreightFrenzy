@@ -62,7 +62,7 @@ public class Constants {
      * The percent speed to run the duck wheel during autonomous.
      */
     @FloatRange(from=0.0, to=1.0)
-    protected static final double AUTO_DUCK_SPEED = .14;
+    public static final double AUTO_DUCK_SPEED = .14;
     /**
      * The maximum encoder position that the arm can extend to.
      */

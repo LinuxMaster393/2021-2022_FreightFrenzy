@@ -14,8 +14,7 @@ public class Pause extends Command {
         this.duration = duration;
     }
     
-    public boolean start(Map<Class<? extends Subsystem>, Subsystem> subsystems,
-                         Set<Class<? extends Subsystem>> activeSubsystems) {
+    public boolean start(Map<Class<? extends Subsystem>, Subsystem> subsystems) {
         startTime = System.nanoTime() / 1e9;
         return true;
     }
@@ -26,5 +25,5 @@ public class Pause extends Command {
         return Math.abs(startTime - System.nanoTime() / 1e9) > duration;
     }
 
-    public void end() {}
+    public void end(Map<Class<? extends Subsystem>, Subsystem> subsystems) {}
 }

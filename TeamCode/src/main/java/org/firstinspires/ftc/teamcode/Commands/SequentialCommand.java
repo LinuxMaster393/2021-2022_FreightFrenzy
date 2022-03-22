@@ -17,26 +17,24 @@ import java.util.Set;
 
 class SequentialCommand extends Command {
     private Queue<Command> commands;
-    private Map<Class<? extends Subsystem>, Subsystem> subsystems;
-    private Set<Class<? extends Subsystem>> activeSubsystems;
+    private Map<Class<? extends Subsystem>, Subsystem> availableSubsystems;
     private Command activeCommand;
-    private boolean isFinished = true;
+    private boolean isFinished;
 
     public SequentialCommand(Command... commands) {
+        isFinished = false;
         this.commands = new ArrayDeque<>(Arrays.asList(commands));
     }
 
-    public boolean start(Map<Class<? extends Subsystem>, Subsystem> subsystems,
-                         Set<Class<? extends Subsystem>> activeSubsystems) {
-        this.subsystems = subsystems;
-        this.activeSubsystems = activeSubsystems;
+    public boolean start(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
+        this.availableSubsystems = availableSubsystems;
         return nextCommand();
     }
 
     public void update() {
         activeCommand.update();
         if (activeCommand.isFinished()) {
-            activeCommand.end();
+            activeCommand.end(availableSubsystems);
             isFinished = nextCommand();
         }
     }
@@ -45,11 +43,11 @@ class SequentialCommand extends Command {
         return isFinished;
     }
 
-    public void end() {}
+    public void end(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {}
 
     private boolean nextCommand() {
         if((activeCommand = commands.poll()) != null) {
-            if(!activeCommand.start(subsystems, activeSubsystems)) return nextCommand();
+            if(!activeCommand.start(availableSubsystems)) return nextCommand();
             else return true;
         } else {
             return false;

@@ -16,7 +16,6 @@ import org.opencv.core.Rect;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +32,7 @@ import static org.firstinspires.ftc.teamcode.Constants.*;
 public abstract class AutoBase extends OpMode {
 
     Drive drive;
-    Map<Class<? extends Subsystem>,Subsystem> subsystems;
+    Map<Class<? extends Subsystem>,Subsystem> availableSubsystems;
 
     public static AllianceColor allianceColor;
     private Rect largestRectangle;
@@ -100,16 +99,15 @@ public abstract class AutoBase extends OpMode {
         currentCommands.remove(0);
         commandFirstLoop = true;
 
-        subsystems = new HashMap<>();
-        subsystems.put(Drive.class, new Drive(hardwareMap, telemetry));
-        subsystems.put(Camera.class, new Camera(hardwareMap, telemetry));
-        subsystems.put(ArmRotator.class, new ArmRotator(hardwareMap, telemetry));
-        subsystems.put(ArmExtender.class, new ArmExtender(hardwareMap, telemetry));
-        subsystems.put(DuckWheel.class, new DuckWheel(hardwareMap, telemetry));
-        subsystems.put(Collection.class, new Collection(hardwareMap, telemetry));
-        subsystems.put(LEDMatrixBack.class, new LEDMatrixBack(hardwareMap, telemetry));
-        subsystems.put(LEDMatrixTop.class, new LEDMatrixTop(hardwareMap, telemetry));
-        subsystems = Collections.unmodifiableMap(subsystems);
+        availableSubsystems = new HashMap<>();
+        availableSubsystems.put(Drive.class, new Drive(hardwareMap, telemetry));
+        availableSubsystems.put(Camera.class, new Camera(hardwareMap, telemetry));
+        availableSubsystems.put(ArmRotator.class, new ArmRotator(hardwareMap, telemetry));
+        availableSubsystems.put(ArmExtender.class, new ArmExtender(hardwareMap, telemetry));
+        availableSubsystems.put(DuckWheel.class, new DuckWheel(hardwareMap, telemetry));
+        availableSubsystems.put(Collection.class, new Collection(hardwareMap, telemetry));
+        availableSubsystems.put(LEDMatrixBack.class, new LEDMatrixBack(hardwareMap, telemetry));
+        availableSubsystems.put(LEDMatrixTop.class, new LEDMatrixTop(hardwareMap, telemetry));
 
         mainDiagonalPercent = 0;
         antiDiagonalPercent = 0;
