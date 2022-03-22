@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.Commands;
 import static org.firstinspires.ftc.teamcode.AutoBase.allianceColor;
 import static org.firstinspires.ftc.teamcode.Constants.AUTO_DUCK_SPEED;
 
-import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.DuckWheel;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 
@@ -27,20 +26,15 @@ public class Ducks extends Command {
     }
 
     public boolean start(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
-        boolean subsystemsAvailable = true;
-        for (Class<? extends Subsystem> subsystem : requiredSubsystems) {
-            if (subsystemsAvailable)
-                subsystemsAvailable = availableSubsystems.containsKey(subsystem);
-            else return false;
-        }
+        if (!subsystemsAvailable(availableSubsystems, requiredSubsystems)) return false;
 
         duckWheel = (DuckWheel) availableSubsystems.remove(DuckWheel.class);
 
-        ducksOn = !ducksOn;
+        ducksOn = duckWheel.getPower() == 0.5 - (AUTO_DUCK_SPEED * allianceColor.direction) / 2;
         if (ducksOn) {
-            duckWheel.setPower(0.5 - (AUTO_DUCK_SPEED * allianceColor.direction) / 2);
+            duckWheel.setPower(0.5);
         } else {
-            duckWheel.setPower(5);
+            duckWheel.setPower(0.5 - (AUTO_DUCK_SPEED * allianceColor.direction) / 2);
         }
         return true;
     }

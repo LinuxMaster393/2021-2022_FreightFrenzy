@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.Commands;
 
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,8 +24,26 @@ import java.util.Set;
  * See each method for more detail.
  */
 public abstract class Command {
+
+    /**
+     * Verifies that all the required subsystems are available for use.
+     *
+     * @param availableSubsystems A map of all the available subsystems, keyed by their class.
+     * @param requiredSubsystems  A set of the classes of all the required subsystems.
+     * @return Whether all the required subsystems are available.
+     */
+    protected boolean subsystemsAvailable(
+            Map<Class<? extends Subsystem>, Subsystem> availableSubsystems,
+            Set<Class<? extends Subsystem>> requiredSubsystems) {
+        for (Class<? extends Subsystem> subsystem : requiredSubsystems) {
+            if (!availableSubsystems.containsKey(subsystem)) return false;
+        }
+        return true;
+    }
+
     /**
      * Executed once before {@link Command#update()} on the first loop of the command.
+     *
      * @param availableSubsystems A mapping of all free subsystems. Used to fetch any used subsystems.
      * @return successfully finished.
      */

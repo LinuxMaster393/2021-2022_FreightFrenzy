@@ -37,11 +37,7 @@ public class Move extends Command {
     }
 
     public boolean start(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
-        boolean subsystemsAvailable = true;
-        for (Class<? extends Subsystem> subsystem : requiredSubsystems) {
-            if (subsystemsAvailable) subsystemsAvailable = availableSubsystems.containsKey(subsystem);
-            else return false;
-        }
+        if (!subsystemsAvailable(availableSubsystems, requiredSubsystems)) return false;
 
         drive = (Drive) availableSubsystems.remove(Drive.class);
 

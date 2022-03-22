@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
 import org.firstinspires.ftc.teamcode.Subsystems.Camera;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
@@ -35,11 +33,7 @@ public class LoadBarcodeCommands extends Command {
     }
 
     public boolean start(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
-        boolean subsystemsAvailable = true;
-        for (Class<? extends Subsystem> subsystem : requiredSubsystems) {
-            if (subsystemsAvailable) subsystemsAvailable = availableSubsystems.containsKey(subsystem);
-            else return false;
-        }
+        if (!subsystemsAvailable(availableSubsystems, requiredSubsystems)) return false;
 
         camera = (Camera) availableSubsystems.remove(Camera.class);
 
