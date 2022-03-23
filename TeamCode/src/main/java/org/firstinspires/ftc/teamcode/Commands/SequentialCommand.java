@@ -15,7 +15,7 @@ import java.util.Set;
  * Created by Brendan Clark on 02/27/2022 at 3:50 PM.
  */
 
-class SequentialCommand extends Command {
+public class SequentialCommand extends Command {
     private Queue<Command> commands;
     private Map<Class<? extends Subsystem>, Subsystem> availableSubsystems;
     private Command activeCommand;
@@ -28,7 +28,8 @@ class SequentialCommand extends Command {
 
     public boolean start(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
         this.availableSubsystems = availableSubsystems;
-        return nextCommand();
+        isFinished = nextCommand();
+        return !isFinished;
     }
 
     public void update() {
@@ -48,9 +49,9 @@ class SequentialCommand extends Command {
     private boolean nextCommand() {
         if((activeCommand = commands.poll()) != null) {
             if(!activeCommand.start(availableSubsystems)) return nextCommand();
-            else return true;
+            else return false;
         } else {
-            return false;
+            return true;
         }
     }
 }

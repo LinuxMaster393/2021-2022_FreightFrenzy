@@ -47,7 +47,7 @@ public class Constants {
      * The percent speed to run the bristles when expelling.
      */
     @FloatRange(from=0.0, to=1.0)
-    protected static final double BRISTLES_POWER_OUT = .75;
+    public static final double BRISTLES_POWER_OUT = .75;
     /**
      * The percent speed to run the duck wheel during TeleOp.
      */

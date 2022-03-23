@@ -14,11 +14,9 @@ public class AutoTest extends AutoBase {
     protected AllianceColor getAllianceColor()  {
         return AllianceColor.BLUE;
     }
-    protected ArrayList<Command> getCommands() {
-        return new ArrayList<Command>(
-                Arrays.asList(
-                        new Pause(100)
-                )
+    protected Command getCommands() {
+        return new SequentialCommand(
+
         );
     }
 }

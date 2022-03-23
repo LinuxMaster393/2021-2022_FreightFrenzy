@@ -15,7 +15,11 @@ import java.util.Set;
  * Command for activating and deactivating the duck wheel.
  */
 public class Ducks extends Command {
-    private boolean ducksOn;
+    double duration;
+    boolean runForTime;
+
+    private static boolean ducksOn;
+
     DuckWheel duckWheel;
     private static final Set<Class<? extends Subsystem>> requiredSubsystems = new HashSet<>(Arrays.asList(
             DuckWheel.class
@@ -25,12 +29,17 @@ public class Ducks extends Command {
         ducksOn = false;
     }
 
+    public Ducks(double duration) {
+        this.duration = duration;
+        runForTime = true;
+    }
+
     public boolean start(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
         if (!subsystemsAvailable(availableSubsystems, requiredSubsystems)) return false;
 
         duckWheel = (DuckWheel) availableSubsystems.remove(DuckWheel.class);
 
-        ducksOn = duckWheel.getPower() == 0.5 - (AUTO_DUCK_SPEED * allianceColor.direction) / 2;
+        ducksOn = !ducksOn;
         if (ducksOn) {
             duckWheel.setPower(0.5);
         } else {

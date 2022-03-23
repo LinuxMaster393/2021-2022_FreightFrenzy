@@ -21,6 +21,8 @@ public class Move extends Command {
             Drive.class
     ));
 
+    boolean useCurrentAngle;
+
     double distance, angle, power;
     double mainDiagonalPercent, antiDiagonalPercent;
 
@@ -32,8 +34,8 @@ public class Move extends Command {
 
     public Move(double distance, @FloatRange(from=0.0, to=1.0) double power) {
         this.distance = distance;
-        this.angle = AutoBase.getTargetAngle();
         this.power = power;
+        useCurrentAngle = true;
     }
 
     public boolean start(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
