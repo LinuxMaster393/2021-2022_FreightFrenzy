@@ -5,7 +5,10 @@ import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class BlueRed extends Command {
+/**
+ * Command for running a different set of commands depending on which alliance we are on.
+ */
+public class BlueRed extends Command { // FIXME: 3/24/22 Needs to be implemented.
     public BlueRed(ArrayList<Command> blueCommands, ArrayList<Command> redCommands) {
     }
 

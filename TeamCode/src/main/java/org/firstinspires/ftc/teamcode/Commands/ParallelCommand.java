@@ -1,19 +1,19 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
-import com.qualcomm.robotcore.hardware.HardwareMap;
-
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
-/**
+/*
  * Created by Brendan Clark on 02/27/2022 at 3:50 PM.
  */
 
+/**
+ * Command for running multiple commands in parallel.
+ */
 public class ParallelCommand extends Command {
     final private ArrayList<Command> commands;
     private Map<Class<? extends Subsystem>, Subsystem> availableSubsystems;

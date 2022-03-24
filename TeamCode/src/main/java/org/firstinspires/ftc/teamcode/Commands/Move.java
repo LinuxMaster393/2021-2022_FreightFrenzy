@@ -6,7 +6,6 @@ import static org.firstinspires.ftc.teamcode.Constants.TICKS_PER_FOOT;
 
 import androidx.annotation.FloatRange;
 
-import org.firstinspires.ftc.teamcode.AutoBase;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 
@@ -15,7 +14,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Move extends Command {
+/**
+ * Command for moving the robot using the holonomic drive.
+ */
+public class Move extends Command { // TODO: 3/24/22 Needs verification that this works.
     Drive drive;
     private static final Set<Class<? extends Subsystem>> requiredSubsystems = new HashSet<>(Arrays.asList(
             Drive.class

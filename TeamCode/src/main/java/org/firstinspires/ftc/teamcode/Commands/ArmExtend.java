@@ -4,9 +4,10 @@ import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 
 import java.util.Map;
 
-import static org.firstinspires.ftc.teamcode.Constants.MAX_ARM_EXTENSION;
-
-public class ArmExtend extends Command {
+/**
+ * Command for extending the arm to a percent of its max extension.
+ */
+public class ArmExtend extends Command { // FIXME: 3/24/22 Needs to be implemented.
     public ArmExtend(double percent) {
 
     }

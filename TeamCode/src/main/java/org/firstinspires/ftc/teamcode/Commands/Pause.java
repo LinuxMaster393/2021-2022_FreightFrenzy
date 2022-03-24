@@ -1,19 +1,20 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
-import org.firstinspires.ftc.teamcode.AutoBase;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 
 import java.util.Map;
-import java.util.Set;
 
+/**
+ * Command for adding a delay between the previous command and the next command.
+ */
 public class Pause extends Command {
     double startTime;
     double duration;
-    
+
     public Pause(double duration) {
         this.duration = duration;
     }
-    
+
     public boolean start(Map<Class<? extends Subsystem>, Subsystem> subsystems) {
         startTime = System.nanoTime() / 1e9;
         return true;

@@ -4,10 +4,10 @@ import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 
 import java.util.Map;
 
-import static org.firstinspires.ftc.teamcode.Constants.MAX_ARM_ROTATION;
-import static org.firstinspires.ftc.teamcode.Constants.STARTING_ARM_POSITION;
-
-public class ArmRotate extends Command {
+/**
+ * Command for raising/lowering the arm.
+ */
+public class ArmRotate extends Command { // FIXME: 3/24/22 Needs to be implemented.
     public ArmRotate(double percent) {
     }
 

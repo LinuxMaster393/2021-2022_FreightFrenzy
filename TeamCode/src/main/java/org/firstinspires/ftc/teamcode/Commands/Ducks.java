@@ -16,6 +16,7 @@ import java.util.Set;
  */
 public class Ducks extends Command {
     double duration;
+    double startTime;
     boolean runForTime;
 
     private static boolean ducksOn;
@@ -25,12 +26,22 @@ public class Ducks extends Command {
             DuckWheel.class
     ));
 
+    /**
+     * Toggles the duck wheel state.
+     */
     public Ducks() {
-        ducksOn = false;
+
     }
 
+    /**
+     * Turns on the duck wheel for a time, then turns it off. Works regardless of the duck wheel's
+     * state at the start of this command.
+     *
+     * @param duration How long to run the duck wheel.
+     */
     public Ducks(double duration) {
         this.duration = duration;
+        startTime = System.nanoTime() / 1e9;
         runForTime = true;
     }
 
@@ -39,7 +50,8 @@ public class Ducks extends Command {
 
         duckWheel = (DuckWheel) availableSubsystems.remove(DuckWheel.class);
 
-        ducksOn = !ducksOn;
+        ducksOn = (!runForTime && !ducksOn);
+
         if (ducksOn) {
             duckWheel.setPower(0.5);
         } else {
@@ -51,10 +63,11 @@ public class Ducks extends Command {
     public void update() {}
 
     public void end(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
+        if (runForTime) duckWheel.setPower(0.5);
         availableSubsystems.put(DuckWheel.class, duckWheel);
     }
 
     public boolean isFinished()  {
-        return true;
+        return !runForTime || Math.abs(startTime - System.nanoTime() / 1e9) > duration;
     }
 }

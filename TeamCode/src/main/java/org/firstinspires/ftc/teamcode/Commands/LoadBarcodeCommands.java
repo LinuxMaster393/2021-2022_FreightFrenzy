@@ -9,14 +9,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Command that runs one set of commands based on the result of a previous call of
- * <a href="#{@link}">{@link DetectBarcodePosition}</a>
+ * Command that runs one set of commands based on the result of a previous call to
+ * {@link DetectBarcodePosition}
+ *
  * @see DetectBarcodePosition
  */
-public class LoadBarcodeCommands extends Command {
-    private Map<Class<? extends Subsystem>, Subsystem> availableSubsystems;
-    private boolean isFinished;
-
+public class LoadBarcodeCommands extends Command { // TODO: 3/24/22 Needs to be verified that this works after DetectBarcodePosition has been completed.
     private Command leftCommand, centerCommand, rightCommand;
     private Command activeCommand;
 
@@ -26,7 +24,6 @@ public class LoadBarcodeCommands extends Command {
     ));
 
     public LoadBarcodeCommands(Command leftCommands, Command centerCommands, Command rightCommands) {
-        isFinished = false;
         this.leftCommand = leftCommands;
         this.centerCommand = centerCommands;
         this.rightCommand = rightCommands;
@@ -50,7 +47,6 @@ public class LoadBarcodeCommands extends Command {
                 return false;
         }
 
-        this.availableSubsystems = availableSubsystems;
         activeCommand.start(availableSubsystems);
 
         return true;
@@ -58,17 +54,14 @@ public class LoadBarcodeCommands extends Command {
 
     public void update() {
         activeCommand.update();
-        if (activeCommand.isFinished()) {
-            activeCommand.end(availableSubsystems);
-            isFinished = true;
-        }
-    }
-
-    public void end(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
-        availableSubsystems.put(Camera.class, camera);
     }
 
     public boolean isFinished() {
-        return isFinished;
+        return activeCommand.isFinished();
+    }
+
+    public void end(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
+        activeCommand.end(availableSubsystems);
+        availableSubsystems.put(Camera.class, camera);
     }
 }

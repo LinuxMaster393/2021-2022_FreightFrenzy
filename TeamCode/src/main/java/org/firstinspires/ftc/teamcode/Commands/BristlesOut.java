@@ -1,9 +1,8 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
-import org.firstinspires.ftc.teamcode.Subsystems.Camera;
+import static org.firstinspires.ftc.teamcode.Constants.BRISTLES_POWER_OUT;
+
 import org.firstinspires.ftc.teamcode.Subsystems.Collection;
-import org.firstinspires.ftc.teamcode.Subsystems.LEDMatrixBack;
-import org.firstinspires.ftc.teamcode.Subsystems.LEDMatrixTop;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 
 import java.util.Arrays;
@@ -11,18 +10,38 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static org.firstinspires.ftc.teamcode.Constants.BRISTLES_POWER_OUT;
-import static org.firstinspires.ftc.teamcode.Constants.MAX_ARM_ROTATION;
-
+/**
+ * Command for ejecting freight from the collection.
+ */
 public class BristlesOut extends Command {
+    double duration;
+    double startTime;
+    boolean runForTime;
+
     Collection collection;
     private static final Set<Class<? extends Subsystem>> requiredSubsystems = new HashSet<>(Arrays.asList(
             Collection.class
     ));
 
-    boolean bristlesOut;
+    private static boolean bristlesOut;
 
-    public BristlesOut() {}
+    /**
+     * Toggles ejecting freight from the collection.
+     */
+    public BristlesOut() {
+    }
+
+    /**
+     * Ejects freight from the collection for a time, then turns the collection off. Works regardless
+     * of the bristle's state at the start of this command.
+     *
+     * @param duration How long to eject from the collection.
+     */
+    public BristlesOut(double duration) {
+        this.duration = duration;
+        startTime = System.nanoTime() / 1e9;
+        runForTime = true;
+    }
 
     @Override
     public boolean start(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
@@ -30,11 +49,11 @@ public class BristlesOut extends Command {
 
         collection = (Collection) availableSubsystems.remove(Collection.class);
 
-        bristlesOut = !bristlesOut;
+        bristlesOut = (!runForTime && !bristlesOut);
         if (bristlesOut) {
-            collection.setPower(.5 - BRISTLES_POWER_OUT / 2);
+            collection.setPower(0.5);
         } else {
-            collection.setPower(.5);
+            collection.setPower(0.5 - BRISTLES_POWER_OUT / 2);
         }
 
         return true;
@@ -47,11 +66,12 @@ public class BristlesOut extends Command {
 
     @Override
     public boolean isFinished() {
-        return true;
+        return !runForTime || Math.abs(startTime - System.nanoTime() / 1e9) > duration;
     }
 
     @Override
     public void end(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
-
+        if (runForTime) collection.setPower(0.5);
+        availableSubsystems.put(Collection.class, collection);
     }
 }

@@ -32,6 +32,7 @@ public abstract class Command {
      * @param requiredSubsystems  A set of the classes of all the required subsystems.
      * @return Whether all the required subsystems are available.
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected boolean subsystemsAvailable(
             Map<Class<? extends Subsystem>, Subsystem> availableSubsystems,
             Set<Class<? extends Subsystem>> requiredSubsystems) {

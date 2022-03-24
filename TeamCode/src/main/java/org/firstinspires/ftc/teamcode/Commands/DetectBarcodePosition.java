@@ -1,29 +1,24 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
-import com.qualcomm.robotcore.hardware.LED;
-
 import org.firstinspires.ftc.teamcode.Subsystems.Camera;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.LEDMatrixBack;
 import org.firstinspires.ftc.teamcode.Subsystems.LEDMatrixTop;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
-import org.firstinspires.ftc.teamcode.visionpipelines.TestPipeline;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import LedDisplayI2cDriver.HT16K33;
-
 /**
  * Command that uses the
- * {@link org.firstinspires.ftc.teamcode.visionpipelines.DuckDetectionPipeline}
+ * {@linkplain org.firstinspires.ftc.teamcode.visionpipelines.DuckDetectionPipeline}
  * to detect the barcode position of the duck.
+ *
  * @see org.firstinspires.ftc.teamcode.visionpipelines.DuckDetectionPipeline
  */
 
-public class DetectBarcodePosition extends Command {
+public class DetectBarcodePosition extends Command { // FIXME: 3/24/22 Needs to be completely implemented.
     Camera camera;
     LEDMatrixBack ledMatrixBack;
     LEDMatrixTop ledMatrixTop;
@@ -66,5 +61,9 @@ public class DetectBarcodePosition extends Command {
     }
 
     @Override
-    public void end(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {}
+    public void end(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
+        availableSubsystems.put(Camera.class, camera);
+        availableSubsystems.put(LEDMatrixTop.class, ledMatrixTop);
+        availableSubsystems.put(LEDMatrixBack.class, ledMatrixBack);
+    }
 }
