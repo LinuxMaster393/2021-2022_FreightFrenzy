@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
+import org.firstinspires.ftc.teamcode.AutoBase;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 
 import java.util.ArrayList;
@@ -16,18 +17,19 @@ import java.util.Map;
  */
 public class ParallelCommand extends Command {
     final private ArrayList<Command> commands;
-    private Map<Class<? extends Subsystem>, Subsystem> availableSubsystems;
+    private AutoBase autoBase;
 
     public ParallelCommand (Command... commands) {
         this.commands = new ArrayList<>(Arrays.asList(commands));
     }
 
-    public boolean start(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
-        this.availableSubsystems = availableSubsystems;
+    public boolean start(AutoBase autoBase) {
+        init(autoBase);
+        this.autoBase = autoBase;
         Iterator<Command> i = commands.iterator();
         while (i.hasNext()) {
             Command command = i.next();
-            if(!command.start(availableSubsystems)) {
+            if(!command.start(autoBase)) {
                 i.remove();
             }
         }
@@ -40,7 +42,7 @@ public class ParallelCommand extends Command {
             Command command = i.next();
             command.update();
             if (command.isFinished()) {
-                command.end(availableSubsystems);
+                command.end(autoBase);
                 i.remove();
             }
         }
@@ -48,5 +50,5 @@ public class ParallelCommand extends Command {
 
     public boolean isFinished() { return commands.isEmpty(); }
 
-    public void end(Map<Class<? extends Subsystem>, Subsystem> subsystems) {}
+    public void end(AutoBase autoBase) {}
 }

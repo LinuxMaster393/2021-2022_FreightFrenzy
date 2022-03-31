@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
+import org.firstinspires.ftc.teamcode.AutoBase;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 
 import java.util.Map;
@@ -15,7 +16,8 @@ public class Pause extends Command {
         this.duration = duration;
     }
 
-    public boolean start(Map<Class<? extends Subsystem>, Subsystem> subsystems) {
+    public boolean start(AutoBase autoBase) {
+        init(autoBase);
         startTime = System.nanoTime() / 1e9;
         return true;
     }
@@ -26,5 +28,5 @@ public class Pause extends Command {
         return Math.abs(startTime - System.nanoTime() / 1e9) > duration;
     }
 
-    public void end(Map<Class<? extends Subsystem>, Subsystem> subsystems) {}
+    public void end(AutoBase autoBase) {}
 }

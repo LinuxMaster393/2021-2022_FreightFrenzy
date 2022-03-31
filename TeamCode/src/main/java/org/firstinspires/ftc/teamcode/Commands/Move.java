@@ -1,27 +1,20 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
-import static org.firstinspires.ftc.teamcode.AutoBase.allianceColor;
 import static org.firstinspires.ftc.teamcode.Constants.ENCODER_POSITION_TOLERANCE;
 import static org.firstinspires.ftc.teamcode.Constants.TICKS_PER_FOOT;
 
 import androidx.annotation.FloatRange;
 
-import org.firstinspires.ftc.teamcode.Subsystems.Drive;
-import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
+import com.qualcomm.robotcore.hardware.Servo;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import org.firstinspires.ftc.teamcode.AutoBase;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 
 /**
  * Command for moving the robot using the holonomic drive.
  */
 public class Move extends Command { // TODO: 3/24/22 Needs verification that this works.
     Drive drive;
-    private static final Set<Class<? extends Subsystem>> requiredSubsystems = new HashSet<>(Arrays.asList(
-            Drive.class
-    ));
 
     boolean useCurrentAngle;
 
@@ -40,10 +33,11 @@ public class Move extends Command { // TODO: 3/24/22 Needs verification that thi
         useCurrentAngle = true;
     }
 
-    public boolean start(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
-        if (!subsystemsAvailable(availableSubsystems, requiredSubsystems)) return false;
+    public boolean start(AutoBase autoBase) {
+        init(autoBase);
 
-        drive = (Drive) availableSubsystems.remove(Drive.class);
+        drive = autoBase.removeSubsystem(Drive.class);
+        if(drive == null) return false;
 
         double targetPosition = distance * TICKS_PER_FOOT;
 
@@ -93,8 +87,8 @@ public class Move extends Command { // TODO: 3/24/22 Needs verification that thi
         return isFinished;
     }
 
-    public void end(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
+    public void end(AutoBase autoBase) {
         drive.setBasePowers(0, 0, 0, 0);
-        availableSubsystems.put(Drive.class, drive);
+        autoBase.returnSubsystem(drive);
     }
 }

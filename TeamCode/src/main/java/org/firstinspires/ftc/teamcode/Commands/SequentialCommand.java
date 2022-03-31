@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
+import org.firstinspires.ftc.teamcode.AutoBase;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 
 import java.util.ArrayDeque;
@@ -16,7 +17,7 @@ import java.util.Queue;
  */
 public class SequentialCommand extends Command {
     private Queue<Command> commands;
-    private Map<Class<? extends Subsystem>, Subsystem> availableSubsystems;
+    private AutoBase autoBase;
     private Command activeCommand;
     private boolean isFinished;
 
@@ -25,8 +26,9 @@ public class SequentialCommand extends Command {
         this.commands = new ArrayDeque<>(Arrays.asList(commands));
     }
 
-    public boolean start(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
-        this.availableSubsystems = availableSubsystems;
+    public boolean start(AutoBase autoBase) {
+        init(autoBase);
+        this.autoBase = autoBase;
         isFinished = nextCommand();
         return !isFinished;
     }
@@ -34,7 +36,7 @@ public class SequentialCommand extends Command {
     public void update() {
         activeCommand.update();
         if (activeCommand.isFinished()) {
-            activeCommand.end(availableSubsystems);
+            activeCommand.end(autoBase);
             isFinished = nextCommand();
         }
     }
@@ -43,11 +45,11 @@ public class SequentialCommand extends Command {
         return isFinished;
     }
 
-    public void end(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {}
+    public void end(AutoBase autoBase) {}
 
     private boolean nextCommand() {
         if((activeCommand = commands.poll()) != null) {
-            if(!activeCommand.start(availableSubsystems)) return nextCommand();
+            if(!activeCommand.start(autoBase)) return nextCommand();
             else return false;
         } else {
             return true;

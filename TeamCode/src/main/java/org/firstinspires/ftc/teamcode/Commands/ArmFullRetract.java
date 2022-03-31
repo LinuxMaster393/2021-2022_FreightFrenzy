@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
+import org.firstinspires.ftc.teamcode.AutoBase;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 
 import java.util.Map;
@@ -12,7 +13,7 @@ public class ArmFullRetract extends Command { // FIXME: 3/24/22 Needs to be impl
     }
 
     @Override
-    public boolean start(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
+    public boolean start(AutoBase autoBase) {
         return true;
     }
 
@@ -27,7 +28,7 @@ public class ArmFullRetract extends Command { // FIXME: 3/24/22 Needs to be impl
     }
 
     @Override
-    public void end(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
+    public void end(AutoBase autoBase) {
 
     }
 }

@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.AutoBase;
 import org.firstinspires.ftc.teamcode.visionpipelines.TestPipeline;
 import org.opencv.core.Rect;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -33,16 +34,16 @@ public class Camera extends Subsystem {
     /**
      * Initialize the camera and OpenCV pipeline.
      *
-     * @param hardwareMap The hardware map containing a Webcam named "Webcam 1".
-     * @param telemetry   The telemetry object for sending diagnostic information back to the driver station.
      * @see HardwareMap
      * @see Telemetry
      */
-    public Camera(HardwareMap hardwareMap, Telemetry telemetry) {
+    public Camera(AutoBase autoBase) {
+        super(autoBase);
+
         this.telemetry = telemetry;
 
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        int cameraMonitorViewId = autoBase.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", autoBase.hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(autoBase.removeDevice(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
         webcam.setPipeline(new TestPipeline());
         webcam.setMillisecondsPermissionTimeout(2500);

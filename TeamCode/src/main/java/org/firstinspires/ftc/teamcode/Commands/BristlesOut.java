@@ -2,10 +2,13 @@ package org.firstinspires.ftc.teamcode.Commands;
 
 import static org.firstinspires.ftc.teamcode.Constants.BRISTLES_POWER_OUT;
 
-import org.firstinspires.ftc.teamcode.Subsystems.Collection;
+import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.AutoBase;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -18,10 +21,7 @@ public class BristlesOut extends Command {
     double startTime;
     boolean runForTime;
 
-    Collection collection;
-    private static final Set<Class<? extends Subsystem>> requiredSubsystems = new HashSet<>(Arrays.asList(
-            Collection.class
-    ));
+    Servo collection;
 
     private static boolean bristlesOut;
 
@@ -44,16 +44,15 @@ public class BristlesOut extends Command {
     }
 
     @Override
-    public boolean start(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
-        if (!subsystemsAvailable(availableSubsystems, requiredSubsystems)) return false;
-
-        collection = (Collection) availableSubsystems.remove(Collection.class);
+    public boolean start(AutoBase autoBase) {
+        collection = autoBase.removeDevice(Servo.class, "collection");
+        if(collection == null) return false;
 
         bristlesOut = (!runForTime && !bristlesOut);
         if (bristlesOut) {
-            collection.setPower(0.5);
+            collection.setPosition(0.5);
         } else {
-            collection.setPower(0.5 - BRISTLES_POWER_OUT / 2);
+            collection.setPosition(0.5 - BRISTLES_POWER_OUT / 2);
         }
 
         return true;
@@ -70,8 +69,8 @@ public class BristlesOut extends Command {
     }
 
     @Override
-    public void end(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
-        if (runForTime) collection.setPower(0.5);
-        availableSubsystems.put(Collection.class, collection);
+    public void end(AutoBase autoBase) {
+        if (runForTime) collection.setPosition(0.5);
+        autoBase.returnDevice(collection);
     }
 }

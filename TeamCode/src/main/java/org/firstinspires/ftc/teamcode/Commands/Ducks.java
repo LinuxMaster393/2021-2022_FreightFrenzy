@@ -1,15 +1,10 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
-import static org.firstinspires.ftc.teamcode.AutoBase.allianceColor;
 import static org.firstinspires.ftc.teamcode.Constants.AUTO_DUCK_SPEED;
 
-import org.firstinspires.ftc.teamcode.Subsystems.DuckWheel;
-import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
+import com.qualcomm.robotcore.hardware.Servo;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import org.firstinspires.ftc.teamcode.AutoBase;
 
 /**
  * Command for activating and deactivating the duck wheel.
@@ -21,10 +16,7 @@ public class Ducks extends Command {
 
     private static boolean ducksOn;
 
-    DuckWheel duckWheel;
-    private static final Set<Class<? extends Subsystem>> requiredSubsystems = new HashSet<>(Arrays.asList(
-            DuckWheel.class
-    ));
+    Servo duckWheel;
 
     /**
      * Toggles the duck wheel state.
@@ -45,26 +37,27 @@ public class Ducks extends Command {
         runForTime = true;
     }
 
-    public boolean start(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
-        if (!subsystemsAvailable(availableSubsystems, requiredSubsystems)) return false;
+    public boolean start(AutoBase autoBase) {
+        init(autoBase);
 
-        duckWheel = (DuckWheel) availableSubsystems.remove(DuckWheel.class);
+        duckWheel = autoBase.removeDevice(Servo.class, "duckWheel");
+        if(duckWheel == null) return false;
 
         ducksOn = (!runForTime && !ducksOn);
 
         if (ducksOn) {
-            duckWheel.setPower(0.5);
+            duckWheel.setPosition(0.5);
         } else {
-            duckWheel.setPower(0.5 - (AUTO_DUCK_SPEED * allianceColor.direction) / 2);
+            duckWheel.setPosition(0.5 - (AUTO_DUCK_SPEED * allianceColor.direction) / 2);
         }
         return true;
     }
 
     public void update() {}
 
-    public void end(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
-        if (runForTime) duckWheel.setPower(0.5);
-        availableSubsystems.put(DuckWheel.class, duckWheel);
+    public void end(AutoBase autoBase) {
+        if (runForTime) duckWheel.setPosition(0.5);
+        autoBase.returnDevice(duckWheel);
     }
 
     public boolean isFinished()  {

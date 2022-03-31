@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.AutoBase;
+import org.firstinspires.ftc.teamcode.Constants;
 
 /*
  * Created by Brendan Clark on 02/27/2022 at 10:30 AM.
@@ -15,4 +17,10 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  */
 public abstract class Subsystem {
     Telemetry telemetry;
+    Constants.AllianceColor allianceColor;
+
+    protected Subsystem(AutoBase autoBase) {
+        this.telemetry = autoBase.telemetry;
+        allianceColor = autoBase.allianceColor;
+    }
 }

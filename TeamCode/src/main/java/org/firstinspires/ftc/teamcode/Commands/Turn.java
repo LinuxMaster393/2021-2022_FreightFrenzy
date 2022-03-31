@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
-import static org.firstinspires.ftc.teamcode.AutoBase.allianceColor;
 import static org.firstinspires.ftc.teamcode.Constants.HEADING_ERROR_TOLERANCE;
 
+import org.firstinspires.ftc.teamcode.AutoBase;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 
@@ -26,10 +26,12 @@ public class Turn extends Command { // TODO: 3/24/22 Needs verification that thi
         this.heading = Math.toRadians(heading);
     }
 
-    public boolean start(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
-        if (!subsystemsAvailable(availableSubsystems, requiredSubsystems)) return false;
+    public boolean start(AutoBase autoBase) {
+        init(autoBase);
 
-        drive = (Drive) availableSubsystems.remove(Drive.class);
+        drive = autoBase.removeSubsystem(Drive.class);
+        if(drive == null) return false;
+
         drive.setTargetHeading(heading * allianceColor.direction);
         return true;
     }
@@ -40,7 +42,7 @@ public class Turn extends Command { // TODO: 3/24/22 Needs verification that thi
         return Math.abs(drive.getHeadingError()) < HEADING_ERROR_TOLERANCE;
     }
 
-    public void end(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
-        availableSubsystems.put(Drive.class, drive);
+    public void end(AutoBase autoBase) {
+        autoBase.returnSubsystem(drive);
     }
 }

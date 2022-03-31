@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
+import org.firstinspires.ftc.teamcode.AutoBase;
 import org.firstinspires.ftc.teamcode.Subsystems.Camera;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 
 import java.util.Arrays;
@@ -29,10 +31,9 @@ public class LoadBarcodeCommands extends Command { // TODO: 3/24/22 Needs to be 
         this.rightCommand = rightCommands;
     }
 
-    public boolean start(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
-        if (!subsystemsAvailable(availableSubsystems, requiredSubsystems)) return false;
-
-        camera = (Camera) availableSubsystems.remove(Camera.class);
+    public boolean start(AutoBase autoBase) {
+        camera = autoBase.removeSubsystem(Camera.class);
+        if(camera == null) return false;
 
         switch(camera.getSavedBarcodePos()) {
             case LEFT:
@@ -47,7 +48,9 @@ public class LoadBarcodeCommands extends Command { // TODO: 3/24/22 Needs to be 
                 return false;
         }
 
-        activeCommand.start(availableSubsystems);
+        autoBase.returnSubsystem(camera);
+
+        activeCommand.start(autoBase);
 
         return true;
     }
@@ -60,8 +63,7 @@ public class LoadBarcodeCommands extends Command { // TODO: 3/24/22 Needs to be 
         return activeCommand.isFinished();
     }
 
-    public void end(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
-        activeCommand.end(availableSubsystems);
-        availableSubsystems.put(Camera.class, camera);
+    public void end(AutoBase autoBase) {
+        activeCommand.end(autoBase);
     }
 }

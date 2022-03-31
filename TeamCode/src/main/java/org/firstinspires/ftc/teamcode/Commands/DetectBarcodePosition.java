@@ -1,14 +1,15 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
+import org.firstinspires.ftc.teamcode.AutoBase;
 import org.firstinspires.ftc.teamcode.Subsystems.Camera;
-import org.firstinspires.ftc.teamcode.Subsystems.LEDMatrixBack;
-import org.firstinspires.ftc.teamcode.Subsystems.LEDMatrixTop;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import LedDisplayI2cDriver.HT16K33;
 
 /**
  * Command that uses the
@@ -20,24 +21,17 @@ import java.util.Set;
 
 public class DetectBarcodePosition extends Command { // FIXME: 3/24/22 Needs to be completely implemented.
     Camera camera;
-    LEDMatrixBack ledMatrixBack;
-    LEDMatrixTop ledMatrixTop;
-
-    private static final Set<Class<? extends Subsystem>> requiredSubsystems = new HashSet<>(Arrays.asList(
-            Camera.class,
-            LEDMatrixBack.class,
-            LEDMatrixTop.class
-    ));
+    HT16K33 ledMatrixBack;
+    HT16K33 ledMatrixTop;
 
     public DetectBarcodePosition() {}
 
     @Override
-    public boolean start(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
-        if (!subsystemsAvailable(availableSubsystems, requiredSubsystems)) return false;
-
-        camera = (Camera) availableSubsystems.remove(Camera.class);
-        ledMatrixBack = (LEDMatrixBack) availableSubsystems.remove(LEDMatrixBack.class);
-        ledMatrixTop = (LEDMatrixTop) availableSubsystems.remove(LEDMatrixTop.class);
+    public boolean start(AutoBase autoBase) {
+        camera = autoBase.removeSubsystem(Camera.class);
+        ledMatrixBack =autoBase.removeDevice(HT16K33.class, "display0");
+        ledMatrixTop = autoBase.removeDevice(HT16K33.class, "display1");
+        if(camera == null || ledMatrixBack == null || ledMatrixTop == null) return false;
 
         camera.saveBarcodePos();
         camera.stopStreaming();
@@ -61,9 +55,9 @@ public class DetectBarcodePosition extends Command { // FIXME: 3/24/22 Needs to 
     }
 
     @Override
-    public void end(Map<Class<? extends Subsystem>, Subsystem> availableSubsystems) {
-        availableSubsystems.put(Camera.class, camera);
-        availableSubsystems.put(LEDMatrixTop.class, ledMatrixTop);
-        availableSubsystems.put(LEDMatrixBack.class, ledMatrixBack);
+    public void end(AutoBase autoBase) {
+        autoBase.returnSubsystem(camera);
+        autoBase.returnDevice(ledMatrixTop);
+        autoBase.returnDevice(ledMatrixBack);
     }
 }
