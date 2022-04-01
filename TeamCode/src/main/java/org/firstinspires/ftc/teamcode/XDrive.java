@@ -96,7 +96,7 @@ public abstract class XDrive extends OpMode {
         armExtender.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         duckWheel = hardwareMap.get(Servo.class, "duckWheel");
-        bristleServo = hardwareMap.get(Servo.class, "bristleServo");
+        bristleServo = hardwareMap.get(Servo.class, "collection");
 
         armTouch = hardwareMap.get(DigitalChannel.class, "armTouch");
         armTouch.setMode(DigitalChannel.Mode.INPUT);
@@ -119,7 +119,6 @@ public abstract class XDrive extends OpMode {
 
         ledStrip = hardwareMap.get(RevBlinkinLedDriver.class, "ledStrip");
 
-        loadSensor = hardwareMap.get(NAU7802.class, "loadSensor");
 
         displays = new HT16K33[] {
                 hardwareMap.get(HT16K33.class, "display0"),

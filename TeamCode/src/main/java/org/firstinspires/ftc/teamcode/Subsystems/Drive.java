@@ -46,7 +46,7 @@ public class Drive extends Subsystem {
     /**
      * Initialize the drive system.
      *
-     * @param availableDevices The hardware map containing four DC Motors named "leftFront", "rightFront",
+     *
      *                    "leftBack", and "rightBack" respectively, and a BNO055IMU named "imu".
      * @param autoBase   The telemetry object for sending diagnostic information back to the driver station.
      * @see HardwareMap
@@ -83,10 +83,10 @@ public class Drive extends Subsystem {
         fetchAngleError();
 
         setTargetPositions(
-                leftFrontTargetPosition + headingError * TURNING_ENCODER_POSITION_SCALAR,
-                rightFrontTargetPosition + headingError * TURNING_ENCODER_POSITION_SCALAR,
-                leftBackTargetPosition + headingError * TURNING_ENCODER_POSITION_SCALAR,
-                rightBackTargetPosition + headingError * TURNING_ENCODER_POSITION_SCALAR
+                leftFront.getTargetPosition() + headingError * TURNING_ENCODER_POSITION_SCALAR,
+                rightFront.getTargetPosition() + headingError * TURNING_ENCODER_POSITION_SCALAR,
+                leftBack.getTargetPosition() + headingError * TURNING_ENCODER_POSITION_SCALAR,
+                rightBack.getTargetPosition() + headingError * TURNING_ENCODER_POSITION_SCALAR
         );
 
         setMotorPowers(
@@ -225,6 +225,7 @@ public class Drive extends Subsystem {
      * @return The error between the target heading and the current heading.
      */
     public double getHeadingError() {
+        fetchAngleError();
         return headingError;
     }
 }

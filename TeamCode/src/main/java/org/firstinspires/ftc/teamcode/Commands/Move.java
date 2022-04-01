@@ -77,10 +77,10 @@ public class Move extends Command { // TODO: 3/24/22 Needs verification that thi
     public boolean isFinished() {
         double[] targetPositions = drive.getTargetPositions();
         double[] motorPositions = drive.getMotorPositions();
-        boolean isFinished = true;
+        boolean isFinished = false;
         for(int i = 0; i < 4; i++) {
             if(Math.abs(targetPositions[i] - motorPositions[i]) <= ENCODER_POSITION_TOLERANCE) {
-                isFinished = false;
+                isFinished = true;
                 break;
             }
         }

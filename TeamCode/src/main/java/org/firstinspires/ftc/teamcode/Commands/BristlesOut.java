@@ -28,8 +28,7 @@ public class BristlesOut extends Command {
     /**
      * Toggles ejecting freight from the collection.
      */
-    public BristlesOut() {
-    }
+    public BristlesOut() {}
 
     /**
      * Ejects freight from the collection for a time, then turns the collection off. Works regardless
@@ -39,16 +38,20 @@ public class BristlesOut extends Command {
      */
     public BristlesOut(double duration) {
         this.duration = duration;
-        startTime = System.nanoTime() / 1e9;
         runForTime = true;
     }
 
     @Override
     public boolean start(AutoBase autoBase) {
+        init(autoBase);
+
+        startTime = System.nanoTime() / 1e9;
+
         collection = autoBase.removeDevice(Servo.class, "collection");
         if(collection == null) return false;
 
         bristlesOut = (!runForTime && !bristlesOut);
+
         if (bristlesOut) {
             collection.setPosition(0.5);
         } else {

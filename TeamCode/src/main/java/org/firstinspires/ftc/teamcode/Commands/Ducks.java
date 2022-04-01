@@ -33,12 +33,13 @@ public class Ducks extends Command {
      */
     public Ducks(double duration) {
         this.duration = duration;
-        startTime = System.nanoTime() / 1e9;
         runForTime = true;
     }
 
     public boolean start(AutoBase autoBase) {
         init(autoBase);
+
+        startTime = System.nanoTime() / 1e9;
 
         duckWheel = autoBase.removeDevice(Servo.class, "duckWheel");
         if(duckWheel == null) return false;
@@ -53,7 +54,9 @@ public class Ducks extends Command {
         return true;
     }
 
-    public void update() {}
+    public void update() {
+        telemetry.addData("ducks", duckWheel.getPosition());
+    }
 
     public void end(AutoBase autoBase) {
         if (runForTime) duckWheel.setPosition(0.5);

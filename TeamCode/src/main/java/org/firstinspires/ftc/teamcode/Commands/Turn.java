@@ -18,9 +18,6 @@ public class Turn extends Command { // TODO: 3/24/22 Needs verification that thi
     double heading;
 
     Drive drive;
-    private static final Set<Class<? extends Subsystem>> requiredSubsystems = new HashSet<>(Arrays.asList(
-            Drive.class
-    ));
 
     public Turn(double heading) {
         this.heading = Math.toRadians(heading);

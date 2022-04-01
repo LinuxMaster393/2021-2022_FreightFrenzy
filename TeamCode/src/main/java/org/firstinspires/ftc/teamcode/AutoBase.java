@@ -2,16 +2,20 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
-
+import com.qualcomm.robotcore.hardware.I2cAddr;
 
 
 import org.firstinspires.ftc.teamcode.Commands.Command;
 import org.firstinspires.ftc.teamcode.Subsystems.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import java.util.Map;
+import java.util.Set;
 
 import LedDisplayI2cDriver.HT16K33;
 
@@ -26,6 +30,12 @@ public abstract class AutoBase extends OpMode {
 
     Drive drive;
     Camera camera;
+
+    private DcMotor armRotator;
+    private DcMotor armExtender;
+
+    DigitalChannel armTouch;
+    DigitalChannel duckWheelTouch;
 
     HT16K33[] displays;
 
@@ -45,15 +55,41 @@ public abstract class AutoBase extends OpMode {
                 hardwareMap.get(HT16K33.class, "display0"),
                 hardwareMap.get(HT16K33.class, "display1")
         };
+        displays[1].setI2cAddress(I2cAddr.create7bit(0x74));
+        displays[1].setRotation(1);
+        for (HT16K33 display : displays) {
+            display.fill();
+            display.writeDisplay();
+            display.displayOn();
+        }
+
+        armRotator = hardwareMap.get(DcMotor.class, "armRotator");
+        armRotator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armRotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armRotator.setTargetPosition(0);
+        armRotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armRotator.setPower(1);
+        armExtender = hardwareMap.get(DcMotor.class, "armExtender");
+        armExtender.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armExtender.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armExtender.setTargetPosition(0);
+        armExtender.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armExtender.setPower(1);
+
+        armTouch = hardwareMap.get(DigitalChannel.class, "armTouch");
+        armTouch.setMode(DigitalChannel.Mode.INPUT);
+        duckWheelTouch = hardwareMap.get(DigitalChannel.class, "duckWheelTouch");
+        duckWheelTouch.setMode(DigitalChannel.Mode.INPUT);
 
         availableDevices = new HashMap<>();
         for(HardwareDevice device : hardwareMap) {
-            availableDevices.put(device.getDeviceName(), device);
+            Set names = hardwareMap.getNamesOf(device);
+            availableDevices.put((String) names.iterator().next(), device);
         }
 
         availableSubsystems = new HashMap<>();
         availableSubsystems.put(Drive.class, drive = new Drive(this));
-        availableSubsystems.put(Camera.class, camera = new Camera(this));
+        availableSubsystems.put(Camera.class, new Camera(this));
     }
 
     public void start() {
@@ -70,7 +106,6 @@ public abstract class AutoBase extends OpMode {
         }
 
         drive.gyroCorrection();
-
     }
 
     @Override

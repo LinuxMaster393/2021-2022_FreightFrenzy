@@ -16,7 +16,12 @@ public class AutoTest extends AutoBase {
     }
     protected Command getCommands() {
         return new SequentialCommand(
-
+                new Move(2,0,.5),
+                new ParallelCommand(
+                        new Ducks(5),
+                        new ArmRotate(.8),
+                        new ArmExtend(.6)
+                )
         );
     }
 }
