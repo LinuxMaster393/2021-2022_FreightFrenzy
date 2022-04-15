@@ -30,6 +30,12 @@ import static org.firstinspires.ftc.teamcode.Constants.TURNING_POWER_SCALAR;
 import static org.firstinspires.ftc.teamcode.Constants.*;
 
 public abstract class XDrive extends OpMode {
+    double weight;
+    FreightType type;
+
+    int counter;
+
+    double calibrationFactor;
 
     protected static AllianceColor allianceColor;
 
@@ -76,7 +82,14 @@ public abstract class XDrive extends OpMode {
 
     HT16K33[] displays;
 
+    DigitalChannel duckWheelTouch;
+
+    double nextTime;
+
     public void init() {
+        counter = 0;
+        calibrationFactor = 0;
+
         allianceColor = getAllianceColor();
 
         /*Instantiating the motor and servo objects as their appropriate motor/servo in the
@@ -131,10 +144,26 @@ public abstract class XDrive extends OpMode {
             display.writeDisplay();
             display.displayOn();
         }
+
+        duckWheelTouch = hardwareMap.get(DigitalChannel.class, "duckWheelTouch");
+        duckWheelTouch.setMode(DigitalChannel.Mode.INPUT);
+
+        nextTime = 0;
+    }
+
+    public void start() {
+        resetStartTime();
+        for (HT16K33 display : displays) {
+            display.clear();
+            display.writeDisplay();
+            display.displayOff();
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void loop() {
+
+        counter ++;
 
         getAngle();
 
@@ -148,7 +177,23 @@ public abstract class XDrive extends OpMode {
 
         ledStripDisplay();
 
-        //blockWeightDisplay();
+        if (time > 80 && time > nextTime) {
+            nextTime = time + 2;
+            for(HT16K33 display : displays) {
+                display.clear();
+                display.drawBitmap(0, 0, endGame);
+                display.writeDisplay();
+            }
+        } else if(time > 80 && time > nextTime - 1) {
+            for(HT16K33 display : displays) {
+                display.clear();
+                display.writeDisplay();
+            }
+        }
+
+        blockWeightDisplay();
+
+        telemetry.addData("duckWheelTouch", duckWheelTouch.getState());
     }
 
     /**
@@ -237,7 +282,6 @@ public abstract class XDrive extends OpMode {
         leftBack.setPower(leftBackPower);
         rightFront.setPower(rightFrontPower);
         rightBack.setPower(rightBackPower);
-
     }
 
     /**
@@ -371,27 +415,33 @@ public abstract class XDrive extends OpMode {
         }
     }
 
-    /*@RequiresApi(api = Build.VERSION_CODES.O)
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void blockWeightDisplay() {
-        double weight = loadSensor.getWeight();
-        double distance = Math.abs(FreightType.NONE.weight - weight);
-        FreightType type = FreightType.NONE;
-        for(FreightType freightType : FreightType.values()) {
-            if (Math.abs(freightType.weight - weight) < distance) {
-                distance = Math.abs(freightType.weight - weight);
-                type = freightType;
+        if(loadSensor.available()) {
+            if (gamepad2.left_stick_button) {
+                calibrationFactor = loadSensor.getWeight();
             }
-        }
-        if (type != currentFreightType) {
-            for (HT16K33 display : displays) {
-                display.clear();
-                display.drawCharacter(0, 0, type.name().charAt(0));
-                display.writeDisplay();
+            weight = loadSensor.getWeight() / calibrationFactor;
+            double distance = Math.abs(FreightType.NONE.weight - weight);
+            type = FreightType.NONE;
+            for (FreightType freightType : FreightType.values()) {
+                if (Math.abs(freightType.weight - weight) < distance) {
+                    distance = Math.abs(freightType.weight - weight);
+                    type = freightType;
+                }
             }
-            currentFreightType = type;
+            if (type != currentFreightType) {
+                for (HT16K33 display : displays) {
+                    display.clear();
+                    display.drawCharacter(0, 0, type.name().charAt(0));
+                    display.writeDisplay();
+                }
+                currentFreightType = type;
+            }
         }
         telemetry.addData("weight", weight);
-    }*/
+        telemetry.addData("type", type);
+    }
 
     protected abstract AllianceColor getAllianceColor();
 }

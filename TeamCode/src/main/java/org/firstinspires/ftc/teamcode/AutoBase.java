@@ -110,7 +110,7 @@ public abstract class AutoBase extends OpMode {
 
     @Override
     public void stop() {
-        for(HT16K33 display : displays) {
+        for (HT16K33 display : displays) {
             display.clear();
             display.writeDisplay();
             display.displayOff();
