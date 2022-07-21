@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
+import androidx.annotation.NonNull;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
-import org.firstinspires.ftc.teamcode.AutoBase;
-import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
-
-import java.util.Map;
+import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
+import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
+import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 
 /**
  * Command for retracting the arm until it has hit the limit switch.
@@ -22,12 +23,12 @@ public class ArmFullRetract extends Command { // FIXME: 3/24/22 Needs to be impl
     }
 
     @Override
-    public boolean start(AutoBase autoBase) {
+    public boolean start(@NonNull SetupResources resources) {
         startTime = System.nanoTime() / 1e9;
 
-        armExtender = autoBase.removeDevice(DcMotorEx.class, "armExtender");
-        armTouch = autoBase.removeDevice(DigitalChannel.class, "armTouch");
-        if(armExtender == null) return false;
+        armExtender = HardwareManager.getDevice(DcMotorEx.class, "armExtender");
+        armTouch = HardwareManager.getDevice(DigitalChannel.class, "armTouch");
+        if (armExtender == null) return false;
 
         armExtender.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         armExtender.setPower(1);
@@ -46,10 +47,10 @@ public class ArmFullRetract extends Command { // FIXME: 3/24/22 Needs to be impl
     }
 
     @Override
-    public void end(AutoBase autoBase) {
+    public void end() {
         armExtender.setTargetPosition(armExtender.getCurrentPosition());
         armExtender.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armExtender.setPower(1);
-        autoBase.returnDevice(armExtender);
+        HardwareManager.returnDevice(armExtender);
     }
 }

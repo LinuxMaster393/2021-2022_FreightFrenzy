@@ -4,13 +4,17 @@ import static org.firstinspires.ftc.teamcode.Constants.BarcodePos;
 import static org.firstinspires.ftc.teamcode.Constants.RESOLUTION_HEIGHT;
 import static org.firstinspires.ftc.teamcode.Constants.RESOLUTION_WIDTH;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.AutoBase;
+import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
+import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
+import org.firstinspires.ftc.teamcode.stateMachineCore.Subsystem;
+import org.firstinspires.ftc.teamcode.stateMachineCore.SubsystemBase;
 import org.firstinspires.ftc.teamcode.visionpipelines.TestPipeline;
 import org.opencv.core.Rect;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -25,10 +29,11 @@ import org.openftc.easyopencv.OpenCvWebcam;
 /**
  * Subsystem for controlling the camera.
  *
- * @see Subsystem
+ * @see SubsystemBase
  */
-public class Camera extends Subsystem {
-    private OpenCvWebcam webcam;
+@Subsystem
+public class Camera extends SubsystemBase {
+    private final OpenCvWebcam webcam;
     private BarcodePos barcodePos;
 
     /**
@@ -37,13 +42,11 @@ public class Camera extends Subsystem {
      * @see HardwareMap
      * @see Telemetry
      */
-    public Camera(AutoBase autoBase) {
-        super(autoBase);
+    public Camera(@NonNull SetupResources resources) {
+        super(resources);
 
-        this.telemetry = telemetry;
-
-        int cameraMonitorViewId = autoBase.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", autoBase.hardwareMap.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(autoBase.removeDevice(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        int cameraMonitorViewId = resources.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", resources.hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(HardwareManager.getDevice(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
         webcam.setPipeline(new TestPipeline());
         webcam.setMillisecondsPermissionTimeout(2500);

@@ -2,9 +2,13 @@ package org.firstinspires.ftc.teamcode.Commands;
 
 import static org.firstinspires.ftc.teamcode.Constants.AUTO_DUCK_SPEED;
 
+import androidx.annotation.NonNull;
+
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.AutoBase;
+import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
+import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
+import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 
 /**
  * Command for activating and deactivating the duck wheel.
@@ -36,13 +40,13 @@ public class Ducks extends Command {
         runForTime = true;
     }
 
-    public boolean start(AutoBase autoBase) {
-        init(autoBase);
+    public boolean start(@NonNull SetupResources resources) {
+        init(resources);
 
         startTime = System.nanoTime() / 1e9;
 
-        duckWheel = autoBase.removeDevice(Servo.class, "duckWheel");
-        if(duckWheel == null) return false;
+        duckWheel = HardwareManager.getDevice(Servo.class, "duckWheel");
+        if (duckWheel == null) return false;
 
         ducksOn = (!runForTime && !ducksOn);
 
@@ -58,9 +62,9 @@ public class Ducks extends Command {
         telemetry.addData("ducks", duckWheel.getPosition());
     }
 
-    public void end(AutoBase autoBase) {
+    public void end() {
         if (runForTime) duckWheel.setPosition(0.5);
-        autoBase.returnDevice(duckWheel);
+        HardwareManager.returnDevice(duckWheel);
     }
 
     public boolean isFinished()  {

@@ -4,11 +4,12 @@ import static org.firstinspires.ftc.teamcode.Constants.ENCODER_POSITION_TOLERANC
 import static org.firstinspires.ftc.teamcode.Constants.TICKS_PER_FOOT;
 
 import androidx.annotation.FloatRange;
+import androidx.annotation.NonNull;
 
-import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.teamcode.AutoBase;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive;
+import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
+import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
+import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 
 /**
  * Command for moving the robot using the holonomic drive.
@@ -27,17 +28,17 @@ public class Move extends Command { // TODO: 3/24/22 Needs verification that thi
         this.power = power;
     }
 
-    public Move(double distance, @FloatRange(from=0.0, to=1.0) double power) {
+    public Move(double distance, @FloatRange(from = 0.0, to = 1.0) double power) {
         this.distance = distance;
         this.power = power;
         useCurrentAngle = true;
     }
 
-    public boolean start(AutoBase autoBase) {
-        init(autoBase);
+    public boolean start(@NonNull SetupResources resources) {
+        init(resources);
 
-        drive = autoBase.removeSubsystem(Drive.class);
-        if(drive == null) return false;
+        drive = HardwareManager.getSubsystem(Drive.class);
+        if (drive == null) return false;
 
         double targetPosition = distance * TICKS_PER_FOOT;
 
@@ -87,8 +88,8 @@ public class Move extends Command { // TODO: 3/24/22 Needs verification that thi
         return isFinished;
     }
 
-    public void end(AutoBase autoBase) {
+    public void end() {
         drive.setBasePowers(0, 0, 0, 0);
-        autoBase.returnSubsystem(drive);
+        HardwareManager.returnSubsystem(drive);
     }
 }

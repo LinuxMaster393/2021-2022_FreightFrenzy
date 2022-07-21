@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
-import org.firstinspires.ftc.teamcode.AutoBase;
-import org.firstinspires.ftc.teamcode.Subsystems.Camera;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive;
-import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
+import androidx.annotation.NonNull;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import org.firstinspires.ftc.teamcode.Subsystems.Camera;
+import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
+import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
+import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 
 /**
  * Command that runs one set of commands based on the result of a previous call to
@@ -17,13 +14,10 @@ import java.util.Set;
  * @see DetectBarcodePosition
  */
 public class LoadBarcodeCommands extends Command { // TODO: 3/24/22 Needs to be verified that this works after DetectBarcodePosition has been completed.
-    private Command leftCommand, centerCommand, rightCommand;
+    private final Command leftCommand, centerCommand, rightCommand;
     private Command activeCommand;
 
     Camera camera;
-    private static final Set<Class<? extends Subsystem>> requiredSubsystems = new HashSet<>(Arrays.asList(
-            Camera.class
-    ));
 
     public LoadBarcodeCommands(Command leftCommands, Command centerCommands, Command rightCommands) {
         this.leftCommand = leftCommands;
@@ -31,11 +25,11 @@ public class LoadBarcodeCommands extends Command { // TODO: 3/24/22 Needs to be 
         this.rightCommand = rightCommands;
     }
 
-    public boolean start(AutoBase autoBase) {
-        camera = autoBase.removeSubsystem(Camera.class);
-        if(camera == null) return false;
+    public boolean start(@NonNull SetupResources resources) {
+        camera = HardwareManager.getSubsystem(Camera.class);
+        if (camera == null || camera.getSavedBarcodePos() == null) return false;
 
-        switch(camera.getSavedBarcodePos()) {
+        switch (camera.getSavedBarcodePos()) {
             case LEFT:
                 activeCommand = leftCommand;
                 break;
@@ -48,9 +42,9 @@ public class LoadBarcodeCommands extends Command { // TODO: 3/24/22 Needs to be 
                 return false;
         }
 
-        autoBase.returnSubsystem(camera);
+        HardwareManager.returnSubsystem(camera);
 
-        activeCommand.start(autoBase);
+        activeCommand.start(resources);
 
         return true;
     }
@@ -63,7 +57,7 @@ public class LoadBarcodeCommands extends Command { // TODO: 3/24/22 Needs to be 
         return activeCommand.isFinished();
     }
 
-    public void end(AutoBase autoBase) {
-        activeCommand.end(autoBase);
+    public void end() {
+        activeCommand.end();
     }
 }

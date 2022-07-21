@@ -1,10 +1,9 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
-import org.firstinspires.ftc.teamcode.AutoBase;
-import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
+import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
-import java.util.Map;
+import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
+import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 
 /**
  * Command for running a different set of commands depending on which alliance we are on.
@@ -19,8 +18,8 @@ public class BlueRed extends Command { // FIXME: 3/24/22 Needs to be implemented
     }
 
     @Override
-    public boolean start(AutoBase autoBase) {
-        switch(allianceColor) {
+    public boolean start(@NonNull SetupResources resources) {
+        switch (allianceColor) {
             case BLUE:
                 activeCommand = blueCommand;
                 break;
@@ -31,7 +30,7 @@ public class BlueRed extends Command { // FIXME: 3/24/22 Needs to be implemented
                 return false;
         }
 
-        activeCommand.start(autoBase);
+        activeCommand.start(resources);
 
         return true;
     }
@@ -47,7 +46,7 @@ public class BlueRed extends Command { // FIXME: 3/24/22 Needs to be implemented
     }
 
     @Override
-    public void end(AutoBase autoBase) {
-        activeCommand.end(autoBase);
+    public void end() {
+        activeCommand.end();
     }
 }

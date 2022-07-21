@@ -2,16 +2,13 @@ package org.firstinspires.ftc.teamcode.Commands;
 
 import static org.firstinspires.ftc.teamcode.Constants.BRISTLES_POWER_OUT;
 
+import androidx.annotation.NonNull;
+
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.AutoBase;
-import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
+import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
+import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 
 /**
  * Command for ejecting freight from the collection.
@@ -42,13 +39,13 @@ public class BristlesOut extends Command {
     }
 
     @Override
-    public boolean start(AutoBase autoBase) {
-        init(autoBase);
+    public boolean start(@NonNull SetupResources resources) {
+        init(resources);
 
         startTime = System.nanoTime() / 1e9;
 
-        collection = autoBase.removeDevice(Servo.class, "collection");
-        if(collection == null) return false;
+        collection = HardwareManager.getDevice(Servo.class, "collection");
+        if (collection == null) return false;
 
         bristlesOut = (!runForTime && !bristlesOut);
 
@@ -72,8 +69,8 @@ public class BristlesOut extends Command {
     }
 
     @Override
-    public void end(AutoBase autoBase) {
+    public void end() {
         if (runForTime) collection.setPosition(0.5);
-        autoBase.returnDevice(collection);
+        HardwareManager.returnDevice(collection);
     }
 }

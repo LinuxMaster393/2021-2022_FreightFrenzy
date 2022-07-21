@@ -9,16 +9,16 @@ import androidx.annotation.Size;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.AutoBase;
-
-import java.util.Map;
+import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
+import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
+import org.firstinspires.ftc.teamcode.stateMachineCore.Subsystem;
+import org.firstinspires.ftc.teamcode.stateMachineCore.SubsystemBase;
 
 /*
  * Created by Brendan Clark on 02/27/2022 at 10:34 AM.
@@ -27,14 +27,14 @@ import java.util.Map;
 /**
  * Subsystem for controlling the drive system. Note: also contains the IMU.
  *
- * @see Subsystem
+ * @see SubsystemBase
  */
+@Subsystem
+public class Drive extends SubsystemBase {
+    private final DcMotorEx leftFront, rightFront, leftBack, rightBack;
+    private final DcMotorEx[] motors;
 
-public class Drive extends Subsystem {
-    private DcMotorEx leftFront, rightFront, leftBack, rightBack;
-    private DcMotorEx[] motors;
-
-    private BNO055IMU imu;
+    private final BNO055IMU imu;
     private Orientation angles;
     private double currentHeading;
     private double headingError;
@@ -45,21 +45,22 @@ public class Drive extends Subsystem {
 
     /**
      * Initialize the drive system.
+     * <p>
+     * <p>
+     * "leftBack", and "rightBack" respectively, and a BNO055IMU named "imu".
      *
-     *
-     *                    "leftBack", and "rightBack" respectively, and a BNO055IMU named "imu".
-     * @param autoBase   The telemetry object for sending diagnostic information back to the driver station.
+     * @param resources The telemetry object for sending diagnostic information back to the driver station.
      * @see HardwareMap
      * @see Telemetry
      */
-    public Drive(AutoBase autoBase) {
-        super(autoBase);
+    public Drive(SetupResources resources) {
+        super(resources);
 
         motors = new DcMotorEx[]{
-                leftFront = autoBase.removeDevice(DcMotorEx.class, "leftFront"),
-                rightFront = autoBase.removeDevice(DcMotorEx.class, "rightFront"),
-                leftBack = autoBase.removeDevice(DcMotorEx.class, "leftBack"),
-                rightBack = autoBase.removeDevice(DcMotorEx.class, "rightBack")
+                leftFront = HardwareManager.getDevice(DcMotorEx.class, "leftFront"),
+                rightFront = HardwareManager.getDevice(DcMotorEx.class, "rightFront"),
+                leftBack = HardwareManager.getDevice(DcMotorEx.class, "leftBack"),
+                rightBack = HardwareManager.getDevice(DcMotorEx.class, "rightBack")
         };
         for (DcMotorEx motor : motors) {
             motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -72,8 +73,13 @@ public class Drive extends Subsystem {
         imuParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imuParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         imuParameters.loggingEnabled = false;
-        imu = (BNO055IMU) autoBase.removeDevice(BNO055IMU.class, "imu");
+        imu = HardwareManager.getDevice(BNO055IMU.class, "imu");
         imu.initialize(imuParameters);
+    }
+
+    @Override
+    public void loop() {
+        gyroCorrection();
     }
 
     /**
@@ -158,10 +164,9 @@ public class Drive extends Subsystem {
      * @see Drive#setBasePowers(double...)
      */
     public void setMotorPowers(@Size(min = 4) double... powers) {
-        leftFront.setPower(powers[0]);
-        rightFront.setPower(powers[1]);
-        leftBack.setPower(powers[2]);
-        rightBack.setPower(powers[3]);
+        for (int i = 0; i < motors.length; i++) {
+            motors[i].setPower((int) Math.round(powers[i]));
+        }
     }
 
     /**
@@ -172,10 +177,9 @@ public class Drive extends Subsystem {
      * @see Drive#setBaseTargetPositions(double...)
      */
     public void setTargetPositions(@Size(min = 4) double... positions) {
-        leftFront.setTargetPosition((int) Math.round(positions[0]));
-        rightFront.setTargetPosition((int) Math.round(positions[1]));
-        leftBack.setTargetPosition((int) Math.round(positions[2]));
-        rightBack.setTargetPosition((int) Math.round(positions[3]));
+        for (int i = 0; i < motors.length; i++) {
+            motors[i].setTargetPosition((int) Math.round(positions[i]));
+        }
     }
 
     /**
@@ -215,7 +219,7 @@ public class Drive extends Subsystem {
      *
      * @return The current heading of the robot.
      */
-    public double getHeading() {
+    public double getHeading() {  // FIXME: 7/21/22 currentHeading is never set, will always return 0.
         return currentHeading;
     }
 

@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
-import org.firstinspires.ftc.teamcode.AutoBase;
-import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
+import androidx.annotation.NonNull;
+
+import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
+import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Queue;
 
 /*
@@ -16,8 +17,8 @@ import java.util.Queue;
  * Command for executing a list of commands in order, one after another.
  */
 public class SequentialCommand extends Command {
-    private Queue<Command> commands;
-    private AutoBase autoBase;
+    private final Queue<Command> commands;
+    private SetupResources resources;
     private Command activeCommand;
     private boolean isFinished;
 
@@ -26,9 +27,9 @@ public class SequentialCommand extends Command {
         this.commands = new ArrayDeque<>(Arrays.asList(commands));
     }
 
-    public boolean start(AutoBase autoBase) {
-        init(autoBase);
-        this.autoBase = autoBase;
+    public boolean start(@NonNull SetupResources resources) {
+        init(resources);
+        this.resources = resources;
         isFinished = nextCommand();
         return !isFinished;
     }
@@ -36,7 +37,7 @@ public class SequentialCommand extends Command {
     public void update() {
         activeCommand.update();
         if (activeCommand.isFinished()) {
-            activeCommand.end(autoBase);
+            activeCommand.end();
             isFinished = nextCommand();
         }
     }
@@ -45,11 +46,12 @@ public class SequentialCommand extends Command {
         return isFinished;
     }
 
-    public void end(AutoBase autoBase) {}
+    public void end() {
+    }
 
     private boolean nextCommand() {
-        if((activeCommand = commands.poll()) != null) {
-            if(!activeCommand.start(autoBase)) return nextCommand();
+        if ((activeCommand = commands.poll()) != null) {
+            if (!activeCommand.start(resources)) return nextCommand();
             else return false;
         } else {
             return true;

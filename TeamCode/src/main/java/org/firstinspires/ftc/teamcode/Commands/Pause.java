@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
-import org.firstinspires.ftc.teamcode.AutoBase;
-import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
+import androidx.annotation.NonNull;
 
-import java.util.Map;
+import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
+import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 
 /**
  * Command for adding a delay between the previous command and the next command.
@@ -16,17 +16,19 @@ public class Pause extends Command {
         this.duration = duration;
     }
 
-    public boolean start(AutoBase autoBase) {
-        init(autoBase);
+    public boolean start(@NonNull SetupResources resources) {
+        init(resources);
         startTime = System.nanoTime() / 1e9;
         return true;
     }
 
-    public void update() {}
+    public void update() {
+    }
 
     public boolean isFinished() {
         return Math.abs(startTime - System.nanoTime() / 1e9) > duration;
     }
 
-    public void end(AutoBase autoBase) {}
+    public void end() {
+    }
 }

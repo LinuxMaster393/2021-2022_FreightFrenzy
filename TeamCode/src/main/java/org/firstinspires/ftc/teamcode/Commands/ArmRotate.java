@@ -1,16 +1,16 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.teamcode.AutoBase;
-import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
-
-import java.util.Map;
-
 import static org.firstinspires.ftc.teamcode.Constants.ENCODER_POSITION_TOLERANCE;
 import static org.firstinspires.ftc.teamcode.Constants.MAX_ARM_ROTATION;
 import static org.firstinspires.ftc.teamcode.Constants.STARTING_ARM_POSITION;
+
+import androidx.annotation.NonNull;
+
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+
+import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
+import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
+import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 
 /**
  * Command for raising/lowering the arm.
@@ -25,9 +25,9 @@ public class ArmRotate extends Command { // FIXME: 3/24/22 Needs to be implement
     }
 
     @Override
-    public boolean start(AutoBase autoBase) {
-        armRotator = autoBase.removeDevice(DcMotorEx.class, "armRotator");
-        if(armRotator == null) return false;
+    public boolean start(@NonNull SetupResources resources) {
+        armRotator = HardwareManager.getDevice(DcMotorEx.class, "armRotator");
+        if (armRotator == null) return false;
 
         armRotator.setTargetPosition(position);
 
@@ -45,7 +45,7 @@ public class ArmRotate extends Command { // FIXME: 3/24/22 Needs to be implement
     }
 
     @Override
-    public void end(AutoBase autoBase) {
+    public void end() {
 
     }
 }

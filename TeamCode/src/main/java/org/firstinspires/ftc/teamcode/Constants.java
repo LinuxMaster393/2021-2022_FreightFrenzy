@@ -1,14 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
-
 import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 
 /**
  * Contains constants for all of the programs in one file for easy access.
@@ -147,7 +147,6 @@ public class Constants {
             this.distanceToDucks = distanceToDucks;
             this.pattern = pattern;
         }
-
     }
 
     /*
