@@ -8,7 +8,6 @@ import androidx.annotation.RequiresApi;
 
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -18,18 +17,18 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 
 /**
- * Handles finding and setting up all enabled {@link SubsystemBase subsystems} and
- * {@link DeviceRegisterBase devices}, and keeping track of all available
- * {@link SubsystemBase subsystems} and {@link DeviceRegisterBase devices}.
+ * Handles finding and setting up all enabled {@link SubsystemBase} and
+ * {@link DeviceRegisterBase}, and keeping track of all available
+ * {@link SubsystemBase} and {@link DeviceRegisterBase}.
  * Also handles loading the first found {@link AllianceValuesBase} class.
  *
  * @see AllianceValuesBase
@@ -39,10 +38,13 @@ import java.util.stream.Collectors;
  */
 public class HardwareManager {
 
+    private static HashMap<Class<? extends Annotation>, Set<Class<?>>> annotatedClasses;
     private static HashMap<Class<? extends SubsystemBase>, SubsystemBase> allSubsystems;
     private static HashMap<Class<? extends SubsystemBase>, SubsystemBase> availableSubsystems;
     private static HashMap<String, HardwareDevice> allDevices;
     private static HashMap<String, HardwareDevice> availableDevices;
+    private static List<SubsystemBase> loopSubsystems;
+    private static List<SubsystemBase> stopSubsystems;
 
     /**
      * Gets a subsystem if it is available, and marks it as unavailable.
@@ -73,17 +75,8 @@ public class HardwareManager {
      * @return All subsystems with a custom loop method.
      */
     @NonNull
-    static ArrayList<SubsystemBase> getAllLoopSubsystems() {
-        ArrayList<SubsystemBase> subsystems = new ArrayList<>();
-        for (SubsystemBase system : allSubsystems.values()) {
-            try {
-                if (!system.getClass().getMethod("loop").equals(SubsystemBase.class.getMethod("loop"))) {  // If the subsystem loop method is overridden.
-                    subsystems.add(system);
-                }
-            } catch (NoSuchMethodException ignore) {
-            }
-        }
-        return subsystems;
+    static List<SubsystemBase> getLoopSubsystems() {
+        return loopSubsystems;
     }
 
     /**
@@ -92,17 +85,8 @@ public class HardwareManager {
      * @return All subsystems with a custom stop method.
      */
     @NonNull
-    static ArrayList<SubsystemBase> getAllStopSubsystems() {
-        ArrayList<SubsystemBase> subsystems = new ArrayList<>();
-        for (SubsystemBase system : allSubsystems.values()) {
-            try {
-                if (!system.getClass().getMethod("stop").equals(SubsystemBase.class.getMethod("stop"))) {  // If the system stop method is overridden.
-                    subsystems.add(system);
-                }
-            } catch (NoSuchMethodException ignore) {
-            }
-        }
-        return subsystems;
+    static List<SubsystemBase> getAllStopSubsystems() {
+        return stopSubsystems;
     }
 
     /**
@@ -116,7 +100,17 @@ public class HardwareManager {
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
     static void registerAllSubsystems(@NonNull SetupResources resources) {
-        Set<Class<?>> classes = getAllRawAnnotatedClasses(Subsystem.class);
+        if (annotatedClasses == null || annotatedClasses.isEmpty() ||
+                !annotatedClasses.containsKey(Subsystem.class) || annotatedClasses.get(Subsystem.class) != null)
+            getAllAnnotatedClasses();
+        if (!annotatedClasses.containsKey(Subsystem.class) ||
+                annotatedClasses.get(Subsystem.class) != null ||
+                Objects.requireNonNull(annotatedClasses.get(Subsystem.class)).size() < 1) {
+            resources.telemetry.addLine("Could not find any subsystems!");
+            return;
+        }
+
+        Set<Class<?>> classes = Objects.requireNonNull(annotatedClasses.get(Subsystem.class));
         HashMap<Class<? extends SubsystemBase>, SubsystemBase> subsystems = new HashMap<>();
         for (Class<?> aClass : classes) {
             if (SubsystemBase.class.isAssignableFrom(aClass) &&
@@ -140,35 +134,92 @@ public class HardwareManager {
         for (SubsystemBase system : allSubsystems.values()) {
             availableSubsystems.put(system.getClass(), system);
         }
+
+        ArrayList<SubsystemBase> loopSubsystems = new ArrayList<>();
+        for (SubsystemBase system : allSubsystems.values()) {
+            try {
+                if (!system.getClass().getMethod("loop").equals(SubsystemBase.class.getMethod("loop"))) {  // If the subsystem loop method is overridden.
+                    loopSubsystems.add(system);
+                }
+            } catch (NoSuchMethodException ignore) {
+            }
+        }
+
+        HardwareManager.loopSubsystems = loopSubsystems;
+
+        ArrayList<SubsystemBase> stopSubsystems = new ArrayList<>();
+        for (SubsystemBase system : allSubsystems.values()) {
+            try {
+                if (!system.getClass().getMethod("stop").equals(SubsystemBase.class.getMethod("stop"))) {  // If the system stop method is overridden.
+                    stopSubsystems.add(system);
+                }
+            } catch (NoSuchMethodException ignore) {
+            }
+        }
+
+        HardwareManager.stopSubsystems = stopSubsystems;
     }
 
     /**
-     * @return All classes in the teamcode package annotated with annotation.
+     * Recursively gets a list of the path to every class in packageName and its subpackages.
+     *
+     * @param packageName The package to start checking from.
+     * @return All classes in packageName and its subpackages.
+     */
+    @NonNull
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private static Set<String> getAllClasses(@NonNull String packageName) {
+        Set<String> list = Collections.emptySet();
+
+        InputStream stream = ClassLoader.getSystemClassLoader()
+                .getResourceAsStream(packageName.replaceAll("[.]", "/"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        System.out.println("Got reader. ");
+        for (Object i : reader.lines().toArray()) {
+
+            if (((String) i).endsWith(".class")) {
+                String n = ((String) i).substring(0, ((String) i).lastIndexOf(".class"));
+                System.out.println(n);
+                list.add(packageName + "." + n);
+            }
+            if (!((String) i).contains(".")) list.addAll(getAllClasses(packageName + "." + i));
+        }
+        return list;
+    }
+
+    /**
+     * Loads all classes in the <code>com.firstinspires.ftc.teamcode</code> package annotated with {@link Subsystem} and/or {@link DeviceRegister}.
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private static Set<Class<?>> getAllRawAnnotatedClasses(@NonNull Class<? extends Annotation> annotation) {
-        InputStream stream = ClassLoader.getSystemClassLoader()
-                .getResourceAsStream("org.firstinspires.ftc.teamcode".replaceAll("[.]", "/"));
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-        return reader.lines()
-                .filter(line -> line.endsWith(".class"))
-                .map(HardwareManager::getClass)
-                .filter(line -> line != null &&
-                        line.isAnnotationPresent(annotation))
-                .collect(Collectors.toSet());
+    private static void getAllAnnotatedClasses() {
+        List<Class<? extends Annotation>> annotations = Arrays.asList(Subsystem.class, DeviceRegister.class);
+        HashMap<Class<? extends Annotation>, Set<Class<?>>> classes = new HashMap<>();
+        for (String className : getAllClasses("org.firstinspires.ftc.teamcode")) {
+            Class<?> clazz = HardwareManager.getClass(className);
+            if (clazz != null) {
+                for (Class<? extends Annotation> annotation : annotations) {
+                    if (clazz.isAnnotationPresent(annotation)) {
+                        if (!classes.containsKey(annotation)) {
+                            classes.put(annotation, Collections.emptySet());
+                        }
+                        Objects.requireNonNull(classes.get(annotation)).add(clazz);
+                    }
+                }
+            }
+        }
+        HardwareManager.annotatedClasses = classes;
     }
 
     /**
-     * Fetches a class from the teamcode package.
+     * Fetches a class object from the class path.
      *
-     * @param className The name of the class to get, without "org.firstinspires.ftc.teamcode".
-     * @return The class in the teamcode package with the same name as className.
+     * @param className The class path of the class to get.
+     * @return The {@link Class} object representation of the class pointed to by the class path.
      */
     @Nullable
     private static Class<?> getClass(@NonNull String className) {
         try {
-            return Class.forName("org.firstinspires.ftc.teamcode" + "."
-                    + className.substring(0, className.lastIndexOf('.')));
+            return Class.forName(className);
         } catch (ClassNotFoundException ignore) {
         }
         return null;
@@ -194,7 +245,7 @@ public class HardwareManager {
 
     /**
      * Executes the {@link DeviceRegisterBase#getDevices(SetupResources)} in classes in the teamcode
-     * package that extend {@link DeviceRegisterBase}, is annotated with {@link DeviceRegister},
+     * package that implement {@link DeviceRegisterBase}, is annotated with {@link DeviceRegister},
      * and the enabled parameter of the annotation is true.
      * <br><br>
      * Should not be used anywhere other than AutoBase.
@@ -207,7 +258,17 @@ public class HardwareManager {
         allDevices = new HashMap<>();
         availableDevices = new HashMap<>();
 
-        Set<Class<?>> classes = getAllRawAnnotatedClasses(DeviceRegister.class);
+        if (annotatedClasses == null || annotatedClasses.isEmpty() ||
+                !annotatedClasses.containsKey(DeviceRegister.class) || annotatedClasses.get(DeviceRegister.class) != null)
+            getAllAnnotatedClasses();
+        if (!annotatedClasses.containsKey(DeviceRegister.class) ||
+                annotatedClasses.get(DeviceRegister.class) != null ||
+                Objects.requireNonNull(annotatedClasses.get(DeviceRegister.class)).size() < 1) {
+            resources.telemetry.addLine("Could not find any device registers!");
+            return;
+        }
+        Set<Class<?>> classes = Objects.requireNonNull(annotatedClasses.get(DeviceRegister.class));
+
         for (Class<?> aClass : classes) {
             if (aClass != null && DeviceRegisterBase.class.isAssignableFrom(aClass) &&
                     Objects.requireNonNull(aClass.getAnnotation(DeviceRegister.class)).enabled()) {
@@ -262,54 +323,5 @@ public class HardwareManager {
     static void clearDevices() {
         allDevices.clear();
         availableDevices.clear();
-    }
-
-    /**
-     * Makes the {@link AllianceColor#allianceValues} field equal to a new instance of the first
-     * found {@link AllianceValuesBase} in the teamcode package that extends
-     * {@link DeviceRegisterBase}, is annotated with {@link AllianceValuesSetter}, and the enabled
-     * parameter of the annotation is true.
-     * <br><br>
-     * Should not be used anywhere other than AutoBase.
-     *
-     * @param telemetry The telemetry object to report detection of multiple enabled
-     *                  {@link AllianceValuesSetter} using.
-     */
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    static void loadAllianceValues(@NonNull Telemetry telemetry) {
-        AllianceColor.resetValues();
-
-        Set<Class<?>> classes = getAllRawAnnotatedClasses(AllianceValuesSetter.class);
-
-        //noinspection ArraysAsListWithZeroOrOneArgument
-        List<AllianceValuesBase> setters = Arrays.asList();
-        for (Class<?> aClass : classes) {
-            if (aClass != null && AllianceValuesBase.class.isAssignableFrom(aClass) &&
-                    Objects.requireNonNull(aClass.getAnnotation(AllianceValuesSetter.class)).enabled()) {
-                Class<? extends AllianceValuesBase> newClass = aClass.asSubclass(AllianceValuesBase.class);
-                try {
-                    setters.add(newClass.getConstructor().newInstance());
-                } catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        if (setters.size() > 1) {
-            telemetry.addData("HardwareManager",
-                    "Multiple activated AllianceValuesSetters were detected. Using " +
-                            setters.get(0).getClass().getSimpleName());
-        }
-
-        AllianceValuesBase blueValues = setters.get(0).as(AllianceValuesBase.class);
-        blueValues.loadBlueValues();
-        blueValues.color = AllianceColor.BLUE;
-        AllianceColor.BLUE.allianceValues = blueValues;
-
-        AllianceValuesBase redValues = setters.get(0).as(AllianceValuesBase.class);
-        redValues.loadRedValues();
-        redValues.color = AllianceColor.RED;
-        AllianceColor.RED.allianceValues = redValues;
-
     }
 }

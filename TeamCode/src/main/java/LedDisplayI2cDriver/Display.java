@@ -1,8 +1,11 @@
 package LedDisplayI2cDriver;
 
-import java.util.ArrayList;
+import static LedDisplayI2cDriver.Constants.CHARACTER_HEIGHT;
+import static LedDisplayI2cDriver.Constants.CHARACTER_WIDTH;
+import static LedDisplayI2cDriver.Constants.LEADING;
+import static LedDisplayI2cDriver.Constants.TRACKING;
 
-import static LedDisplayI2cDriver.Constants.*;
+import java.util.ArrayList;
 
 public class Display {
 
@@ -47,18 +50,28 @@ public class Display {
      * clears the displayBuffer of each displayBoard
      */
     public void clear() {
-        for(HT16K33 displayBoard : displayBoards) {
+        for (HT16K33 displayBoard : displayBoards) {
             displayBoard.clear();
         }
     }
 
     /**
+     * Fills the displayBuffer of each displayBoard
+     */
+    public void fill() {
+        for (HT16K33 displayBoard : displayBoards) {
+            displayBoard.fill();
+        }
+    }
+
+    /**
      * rotates the display
+     *
      * @param rotation indicated rotation; accepts 0-3 otherwise defaults to 0
      */
     public void setRotation(int rotation) {
         this.rotation = rotation;
-        for(int i = 0; i < displayBoards.size(); i++) {
+        for (int i = 0; i < displayBoards.size(); i++) {
             displayBoards.get(i).setRotation(rotation);
         }
     }

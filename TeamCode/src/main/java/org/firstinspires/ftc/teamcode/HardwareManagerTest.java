@@ -7,8 +7,10 @@ import org.firstinspires.ftc.teamcode.Commands.Move;
 import org.firstinspires.ftc.teamcode.Commands.Pause;
 import org.firstinspires.ftc.teamcode.Commands.SequentialCommand;
 import org.firstinspires.ftc.teamcode.stateMachineCore.AllianceColor;
+import org.firstinspires.ftc.teamcode.stateMachineCore.AllianceValuesBase;
 import org.firstinspires.ftc.teamcode.stateMachineCore.AutoBase;
 import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
+import org.firstinspires.ftc.teamcode.stateMachineResources.AllianceValues;
 
 @Autonomous(name = "HardwareManagerTest")
 public class HardwareManagerTest extends AutoBase {
@@ -24,5 +26,10 @@ public class HardwareManagerTest extends AutoBase {
                 new Ducks(),
                 new Pause(2.0)
         );
+    }
+
+    @Override
+    protected AllianceValuesBase getAllianceValues() {
+        return new AllianceValues();
     }
 }

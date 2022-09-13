@@ -18,19 +18,24 @@ public class SetupResources {
     public HardwareMap hardwareMap;
     @NonNull
     public AllianceColor allianceColor;
+    @NonNull
+    public AllianceValuesBase allianceValues;
 
     /**
      * Constructs a SetupResources object.
      *
-     * @param telemetry     The telemetry to be contained in the object.
-     * @param hardwareMap   The hardware map to be contained in the object.
-     * @param allianceColor The alliance color to be contained in the object.
+     * @param telemetry      The telemetry to be contained in the object.
+     * @param hardwareMap    The hardware map to be contained in the object.
+     * @param allianceColor  The alliance color to be contained in the object.
+     * @param allianceValues The AllianceValuesBase object that has the values that change from alliance to alliance.
      */
     protected SetupResources(@NonNull Telemetry telemetry,
                              @NonNull HardwareMap hardwareMap,
-                             @NonNull AllianceColor allianceColor) {
+                             @NonNull AllianceColor allianceColor,
+                             @NonNull AllianceValuesBase allianceValues) {
         this.telemetry = telemetry;
         this.hardwareMap = hardwareMap;
         this.allianceColor = allianceColor;
+        this.allianceValues = allianceValues;
     }
 }

@@ -25,15 +25,17 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public abstract class Command {
     protected Telemetry telemetry;
     protected AllianceColor allianceColor;
+    protected AllianceValuesBase rawAllianceValues;
 
     /**
-     * Loads the telemetry and the alliance color objects from the {@link SetupResources}
+     * Loads the telemetry, the alliance color, and AllianceValuesBase objects from the {@link SetupResources}
      *
      * @param resources The {@link SetupResources} object to load from.
      */
     public void init(@NonNull SetupResources resources) {
         telemetry = resources.telemetry;
         allianceColor = resources.allianceColor;
+        rawAllianceValues = resources.allianceValues;
     }
 
     /**

@@ -9,10 +9,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import java.util.HashMap;
 
 /**
- * Base class for registering any {@link HardwareDevice} with the {@link HardwareManager} by
+ * Interface for registering any {@link HardwareDevice} with the {@link HardwareManager} by
  * overriding {@link DeviceRegisterBase#getDevices(SetupResources)}.
  */
-public abstract class DeviceRegisterBase {
+public interface DeviceRegisterBase {
     /**
      * Sets up and returns hardware devices that can be used by commands or subsystems in the state machine.
      *
@@ -22,7 +22,5 @@ public abstract class DeviceRegisterBase {
      * @see HardwareDevice
      */
     @Nullable
-    public HashMap<String, HardwareDevice> getDevices(@NonNull SetupResources resources) {
-        return null;
-    }
+    HashMap<String, HardwareDevice> getDevices(@NonNull SetupResources resources);
 }

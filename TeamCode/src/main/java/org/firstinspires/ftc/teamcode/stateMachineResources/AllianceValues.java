@@ -3,9 +3,8 @@ package org.firstinspires.ftc.teamcode.stateMachineResources;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 
 import org.firstinspires.ftc.teamcode.stateMachineCore.AllianceValuesBase;
-import org.firstinspires.ftc.teamcode.stateMachineCore.AllianceValuesSetter;
 
-@AllianceValuesSetter
+
 public class AllianceValues extends AllianceValuesBase {
 
     /**

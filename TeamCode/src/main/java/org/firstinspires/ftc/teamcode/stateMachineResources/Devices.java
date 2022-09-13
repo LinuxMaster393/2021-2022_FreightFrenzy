@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 @DeviceRegister
-public class Devices extends DeviceRegisterBase {
+public class Devices implements DeviceRegisterBase {
 
     private final List<String> excludedDevices = Collections.emptyList();
 
