@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
-import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
 import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 
 /**
@@ -26,8 +25,8 @@ public class ArmFullRetract extends Command { // FIXME: 3/24/22 Needs to be impl
     public boolean start(@NonNull SetupResources resources) {
         startTime = System.nanoTime() / 1e9;
 
-        armExtender = HardwareManager.getDevice(DcMotorEx.class, "armExtender");
-        armTouch = HardwareManager.getDevice(DigitalChannel.class, "armTouch");
+        armExtender = resources.hardwareManager.getDevice(DcMotorEx.class, "armExtender");
+        armTouch = resources.hardwareManager.getDevice(DigitalChannel.class, "armTouch");
         if (armExtender == null) return false;
 
         armExtender.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -47,10 +46,10 @@ public class ArmFullRetract extends Command { // FIXME: 3/24/22 Needs to be impl
     }
 
     @Override
-    public void end() {
+    public void end(SetupResources resources) {
         armExtender.setTargetPosition(armExtender.getCurrentPosition());
         armExtender.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armExtender.setPower(1);
-        HardwareManager.returnDevice(armExtender);
+        resources.hardwareManager.returnDevice(armExtender);
     }
 }

@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 
 import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
-import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
 import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 
 /**
@@ -24,7 +23,7 @@ public class Turn extends Command { // TODO: 3/24/22 Needs verification that thi
     public boolean start(@NonNull SetupResources resources) {
         init(resources);
 
-        drive = HardwareManager.getSubsystem(Drive.class);
+        drive = resources.hardwareManager.getSubsystem(Drive.class);
         if (drive == null) return false;
 
         drive.setTargetHeading(heading * allianceColor.direction);
@@ -38,7 +37,7 @@ public class Turn extends Command { // TODO: 3/24/22 Needs verification that thi
         return Math.abs(drive.getHeadingError()) < HEADING_ERROR_TOLERANCE;
     }
 
-    public void end() {
-        HardwareManager.returnSubsystem(drive);
+    public void end(SetupResources resources) {
+        resources.hardwareManager.returnSubsystem(drive);
     }
 }

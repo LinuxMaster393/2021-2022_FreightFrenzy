@@ -15,7 +15,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
 import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 import org.firstinspires.ftc.teamcode.stateMachineCore.Subsystem;
 import org.firstinspires.ftc.teamcode.stateMachineCore.SubsystemBase;
@@ -57,10 +56,10 @@ public class Drive extends SubsystemBase {
         super(resources);
 
         motors = new DcMotorEx[]{
-                leftFront = HardwareManager.getDevice(DcMotorEx.class, "leftFront"),
-                rightFront = HardwareManager.getDevice(DcMotorEx.class, "rightFront"),
-                leftBack = HardwareManager.getDevice(DcMotorEx.class, "leftBack"),
-                rightBack = HardwareManager.getDevice(DcMotorEx.class, "rightBack")
+                leftFront = resources.hardwareManager.getDevice(DcMotorEx.class, "leftFront"),
+                rightFront = resources.hardwareManager.getDevice(DcMotorEx.class, "rightFront"),
+                leftBack = resources.hardwareManager.getDevice(DcMotorEx.class, "leftBack"),
+                rightBack = resources.hardwareManager.getDevice(DcMotorEx.class, "rightBack")
         };
         for (DcMotorEx motor : motors) {
             motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -73,7 +72,7 @@ public class Drive extends SubsystemBase {
         imuParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imuParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         imuParameters.loggingEnabled = false;
-        imu = HardwareManager.getDevice(BNO055IMU.class, "imu");
+        imu = resources.hardwareManager.getDevice(BNO055IMU.class, "imu");
         imu.initialize(imuParameters);
     }
 

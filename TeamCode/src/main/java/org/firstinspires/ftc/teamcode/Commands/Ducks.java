@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
-import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
 import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 
 /**
@@ -45,7 +44,7 @@ public class Ducks extends Command {
 
         startTime = System.nanoTime() / 1e9;
 
-        duckWheel = HardwareManager.getDevice(Servo.class, "duckWheel");
+        duckWheel = resources.hardwareManager.getDevice(Servo.class, "duckWheel");
         if (duckWheel == null) return false;
 
         ducksOn = (!runForTime && !ducksOn);
@@ -62,12 +61,13 @@ public class Ducks extends Command {
         telemetry.addData("ducks", duckWheel.getPosition());
     }
 
-    public void end() {
-        if (runForTime) duckWheel.setPosition(0.5);
-        HardwareManager.returnDevice(duckWheel);
-    }
-
-    public boolean isFinished()  {
+    public boolean isFinished() {
         return !runForTime || Math.abs(startTime - System.nanoTime() / 1e9) > duration;
     }
+
+    public void end(SetupResources resources) {
+        if (runForTime) duckWheel.setPosition(0.5);
+        resources.hardwareManager.returnDevice(duckWheel);
+    }
+
 }

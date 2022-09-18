@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
-import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
 import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 
 /**
@@ -44,7 +43,7 @@ public class BristlesOut extends Command {
 
         startTime = System.nanoTime() / 1e9;
 
-        collection = HardwareManager.getDevice(Servo.class, "collection");
+        collection = resources.hardwareManager.getDevice(Servo.class, "collection");
         if (collection == null) return false;
 
         bristlesOut = (!runForTime && !bristlesOut);
@@ -69,8 +68,8 @@ public class BristlesOut extends Command {
     }
 
     @Override
-    public void end() {
+    public void end(SetupResources resources) {
         if (runForTime) collection.setPosition(0.5);
-        HardwareManager.returnDevice(collection);
+        resources.hardwareManager.returnDevice(collection);
     }
 }

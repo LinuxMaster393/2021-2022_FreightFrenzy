@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
  * Command for running a different set of commands depending on which alliance we are on.
  */
 public class BlueRed extends Command { // FIXME: 3/24/22 Needs to be implemented.
-    private Command blueCommand, redCommand;
+    private final Command blueCommand, redCommand;
     private Command activeCommand;
 
     public BlueRed(Command blueCommand, Command redCommand) {
@@ -46,7 +46,7 @@ public class BlueRed extends Command { // FIXME: 3/24/22 Needs to be implemented
     }
 
     @Override
-    public void end() {
-        activeCommand.end();
+    public void end(SetupResources resources) {
+        activeCommand.end(resources);
     }
 }

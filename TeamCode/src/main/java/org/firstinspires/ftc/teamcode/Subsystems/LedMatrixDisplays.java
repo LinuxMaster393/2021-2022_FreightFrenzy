@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 
 import com.qualcomm.robotcore.hardware.I2cAddr;
 
-import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
 import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 import org.firstinspires.ftc.teamcode.stateMachineCore.Subsystem;
 import org.firstinspires.ftc.teamcode.stateMachineCore.SubsystemBase;
@@ -20,8 +19,8 @@ public class LedMatrixDisplays extends SubsystemBase {
         super(resources);
 
         displays = new HT16K33[]{
-                HardwareManager.getDevice(HT16K33.class, "display0"),
-                HardwareManager.getDevice(HT16K33.class, "display1")
+                resources.hardwareManager.getDevice(HT16K33.class, "display0"),
+                resources.hardwareManager.getDevice(HT16K33.class, "display1")
         };
         displays[1].setI2cAddress(I2cAddr.create7bit(0x74));
         displays[1].setRotation(1);

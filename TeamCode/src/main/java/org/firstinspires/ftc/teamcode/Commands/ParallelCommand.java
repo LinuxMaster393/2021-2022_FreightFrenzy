@@ -43,7 +43,7 @@ public class ParallelCommand extends Command {
             Command command = i.next();
             command.update();
             if (command.isFinished()) {
-                command.end();
+                command.end(setupResources);
                 i.remove();
             }
         }
@@ -53,6 +53,6 @@ public class ParallelCommand extends Command {
         return commands.isEmpty();
     }
 
-    public void end() {
+    public void end(SetupResources resources) {
     }
 }

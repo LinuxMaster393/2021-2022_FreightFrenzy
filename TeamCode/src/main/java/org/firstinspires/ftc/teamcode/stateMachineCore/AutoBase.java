@@ -16,6 +16,8 @@ public abstract class AutoBase extends OpMode {
 
     private SetupResources resources;
 
+    private HardwareManager hardwareManager;
+
     /**
      * Sets up the state machine by loading the alliance specific values, determining the current
      * alliance color, registering all devices and subsystems with the {@link HardwareManager},
@@ -29,10 +31,11 @@ public abstract class AutoBase extends OpMode {
         AllianceValuesBase allianceValues = getAllianceValues();
         allianceValues.setColor(allianceColor);
 
-        resources = new SetupResources(telemetry, hardwareMap, allianceColor, allianceValues);
+        hardwareManager = new HardwareManager();
 
-        HardwareManager.registerAllDevices(resources);
-        HardwareManager.registerAllSubsystems(resources);
+        resources = new SetupResources(telemetry, hardwareMap, allianceColor, allianceValues, hardwareManager);
+        hardwareManager.registerAllDevices(resources);
+        hardwareManager.registerAllSubsystems(resources);
 
         autonomousCommand = getCommands();
     }
@@ -48,12 +51,12 @@ public abstract class AutoBase extends OpMode {
         autonomousCommand.update();
 
         if (autonomousCommand.isFinished()) {
-            autonomousCommand.end();
+            autonomousCommand.end(resources);
             requestOpModeStop();
         }
 
         // Runs the loop method of all subsystems that have overridden it.
-        for (SubsystemBase subsystem : HardwareManager.getLoopSubsystems()) {
+        for (SubsystemBase subsystem : hardwareManager.getLoopSubsystems()) {
             subsystem.loop();
         }
     }
@@ -61,12 +64,12 @@ public abstract class AutoBase extends OpMode {
     @Override
     public void stop() {
         // Runs the stop method of all subsystems that have overridden it.
-        for (SubsystemBase subsystem : HardwareManager.getAllStopSubsystems()) {
+        for (SubsystemBase subsystem : hardwareManager.getAllStopSubsystems()) {
             subsystem.stop();
         }
 
-        HardwareManager.clearSubsystems();
-        HardwareManager.clearDevices();
+        hardwareManager.clearSubsystems();
+        hardwareManager.clearDevices();
     }
 
     /**

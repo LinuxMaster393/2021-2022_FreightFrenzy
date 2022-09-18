@@ -5,7 +5,6 @@ import androidx.annotation.NonNull;
 import org.firstinspires.ftc.teamcode.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.Subsystems.LedMatrixDisplays;
 import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
-import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
 import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 
 /**
@@ -24,8 +23,8 @@ public class DetectBarcodePosition extends Command { // FIXME: 3/24/22 Needs to 
 
     @Override
     public boolean start(@NonNull SetupResources resources) {
-        camera = HardwareManager.getSubsystem(Camera.class);
-        ledMatrix = HardwareManager.getSubsystem(LedMatrixDisplays.class);
+        camera = resources.hardwareManager.getSubsystem(Camera.class);
+        ledMatrix = resources.hardwareManager.getSubsystem(LedMatrixDisplays.class);
         if (camera == null || ledMatrix == null) return false;
 
         camera.saveBarcodePos();
@@ -47,8 +46,8 @@ public class DetectBarcodePosition extends Command { // FIXME: 3/24/22 Needs to 
     }
 
     @Override
-    public void end() {
-        HardwareManager.returnSubsystem(camera);
-        HardwareManager.returnSubsystem(ledMatrix);
+    public void end(SetupResources resources) {
+        resources.hardwareManager.returnSubsystem(camera);
+        resources.hardwareManager.returnSubsystem(ledMatrix);
     }
 }

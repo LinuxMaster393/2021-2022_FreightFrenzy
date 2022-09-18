@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  *     <li>{@link Command#isFinished()} -- Contains any conditionals needed to determine if the
  *              state machine should move on to the next command. Executed once each loop after
  *              {@linkplain Command#update()} has run.</li>
- *     <li>{@link Command#end()} -- Executed once after {@linkplain Command#isFinished()} has returned true,
+ *     <li>{@link Command#end(SetupResources)} -- Executed once after {@linkplain Command#isFinished()} has returned true,
  *              but before the next command is loaded.</li>
  * </ul>
  * See each method for more detail.
@@ -60,5 +60,5 @@ public abstract class Command {
     /**
      * Executed once after {@link Command#update()} has returned true, but before the next command is loaded.
      */
-    public abstract void end();
+    public abstract void end(SetupResources resources);
 }

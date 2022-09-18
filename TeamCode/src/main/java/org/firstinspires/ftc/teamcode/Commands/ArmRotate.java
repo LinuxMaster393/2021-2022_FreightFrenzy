@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
-import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
 import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 
 /**
@@ -26,7 +25,7 @@ public class ArmRotate extends Command { // FIXME: 3/24/22 Needs to be implement
 
     @Override
     public boolean start(@NonNull SetupResources resources) {
-        armRotator = HardwareManager.getDevice(DcMotorEx.class, "armRotator");
+        armRotator = resources.hardwareManager.getDevice(DcMotorEx.class, "armRotator");
         if (armRotator == null) return false;
 
         armRotator.setTargetPosition(position);
@@ -45,7 +44,7 @@ public class ArmRotate extends Command { // FIXME: 3/24/22 Needs to be implement
     }
 
     @Override
-    public void end() {
+    public void end(SetupResources resources) {
 
     }
 }

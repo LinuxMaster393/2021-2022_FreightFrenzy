@@ -37,7 +37,7 @@ public class SequentialCommand extends Command {
     public void update() {
         activeCommand.update();
         if (activeCommand.isFinished()) {
-            activeCommand.end();
+            activeCommand.end(resources);
             isFinished = nextCommand();
         }
     }
@@ -46,7 +46,7 @@ public class SequentialCommand extends Command {
         return isFinished;
     }
 
-    public void end() {
+    public void end(SetupResources resources) {
     }
 
     private boolean nextCommand() {

@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
-import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
 import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 
 /**
@@ -25,7 +24,7 @@ public class ArmExtend extends Command { // FIXME: 3/24/22 Needs to be implement
 
     @Override
     public boolean start(@NonNull SetupResources resources) {
-        armExtender = HardwareManager.getDevice(DcMotorEx.class, "armExtender");
+        armExtender = resources.hardwareManager.getDevice(DcMotorEx.class, "armExtender");
         if (armExtender == null) return false;
 
         armExtender.setTargetPosition(position);
@@ -44,7 +43,7 @@ public class ArmExtend extends Command { // FIXME: 3/24/22 Needs to be implement
     }
 
     @Override
-    public void end() {
+    public void end(SetupResources resources) {
 
     }
 }

@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 
 import org.firstinspires.ftc.teamcode.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
-import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
 import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 
 /**
@@ -26,7 +25,7 @@ public class LoadBarcodeCommands extends Command { // TODO: 3/24/22 Needs to be 
     }
 
     public boolean start(@NonNull SetupResources resources) {
-        camera = HardwareManager.getSubsystem(Camera.class);
+        camera = resources.hardwareManager.getSubsystem(Camera.class);
         if (camera == null || camera.getSavedBarcodePos() == null) return false;
 
         switch (camera.getSavedBarcodePos()) {
@@ -42,7 +41,7 @@ public class LoadBarcodeCommands extends Command { // TODO: 3/24/22 Needs to be 
                 return false;
         }
 
-        HardwareManager.returnSubsystem(camera);
+        resources.hardwareManager.returnSubsystem(camera);
 
         activeCommand.start(resources);
 
@@ -57,7 +56,7 @@ public class LoadBarcodeCommands extends Command { // TODO: 3/24/22 Needs to be 
         return activeCommand.isFinished();
     }
 
-    public void end() {
-        activeCommand.end();
+    public void end(SetupResources resources) {
+        activeCommand.end(resources);
     }
 }

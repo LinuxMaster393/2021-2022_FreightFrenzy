@@ -38,13 +38,13 @@ import java.util.Set;
  */
 public class HardwareManager {
 
-    private static HashMap<Class<? extends Annotation>, Set<Class<?>>> annotatedClasses;
-    private static HashMap<Class<? extends SubsystemBase>, SubsystemBase> allSubsystems;
-    private static HashMap<Class<? extends SubsystemBase>, SubsystemBase> availableSubsystems;
-    private static HashMap<String, HardwareDevice> allDevices;
-    private static HashMap<String, HardwareDevice> availableDevices;
-    private static List<SubsystemBase> loopSubsystems;
-    private static List<SubsystemBase> stopSubsystems;
+    private HashMap<Class<? extends Annotation>, Set<Class<?>>> annotatedClasses;
+    private HashMap<Class<? extends SubsystemBase>, SubsystemBase> allSubsystems;
+    private HashMap<Class<? extends SubsystemBase>, SubsystemBase> availableSubsystems;
+    private HashMap<String, HardwareDevice> allDevices;
+    private HashMap<String, HardwareDevice> availableDevices;
+    private List<SubsystemBase> loopSubsystems;
+    private List<SubsystemBase> stopSubsystems;
 
     /**
      * Gets a subsystem if it is available, and marks it as unavailable.
@@ -53,7 +53,7 @@ public class HardwareManager {
      * @return The subsystem of type subsystemClass.
      */
     @Nullable
-    public static <T extends SubsystemBase> T getSubsystem(@NonNull Class<? extends T> subsystemClass) {
+    public <T extends SubsystemBase> T getSubsystem(@NonNull Class<? extends T> subsystemClass) {
         SubsystemBase system = availableSubsystems.remove(subsystemClass);
         return subsystemClass.cast(system);
     }
@@ -63,7 +63,7 @@ public class HardwareManager {
      *
      * @param system The subsystem to return to the manager.
      */
-    public static void returnSubsystem(@Nullable SubsystemBase system) {
+    public void returnSubsystem(@Nullable SubsystemBase system) {
         if (system != null) {
             availableSubsystems.put(system.getClass(), system);
         }
@@ -75,7 +75,7 @@ public class HardwareManager {
      * @return All subsystems with a custom loop method.
      */
     @NonNull
-    static List<SubsystemBase> getLoopSubsystems() {
+    List<SubsystemBase> getLoopSubsystems() {
         return loopSubsystems;
     }
 
@@ -85,7 +85,7 @@ public class HardwareManager {
      * @return All subsystems with a custom stop method.
      */
     @NonNull
-    static List<SubsystemBase> getAllStopSubsystems() {
+    List<SubsystemBase> getAllStopSubsystems() {
         return stopSubsystems;
     }
 
@@ -99,7 +99,7 @@ public class HardwareManager {
      *                  and alliance color for the subsystems.
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
-    static void registerAllSubsystems(@NonNull SetupResources resources) {
+    void registerAllSubsystems(@NonNull SetupResources resources) {
         if (annotatedClasses == null || annotatedClasses.isEmpty() ||
                 !annotatedClasses.containsKey(Subsystem.class) || annotatedClasses.get(Subsystem.class) != null)
             getAllAnnotatedClasses();
@@ -111,21 +111,49 @@ public class HardwareManager {
         }
 
         Set<Class<?>> classes = Objects.requireNonNull(annotatedClasses.get(Subsystem.class));
-        HashMap<Class<? extends SubsystemBase>, SubsystemBase> subsystems = new HashMap<>();
-        for (Class<?> aClass : classes) {
-            if (SubsystemBase.class.isAssignableFrom(aClass) &&
-                    Objects.requireNonNull(aClass.getAnnotation(Subsystem.class)).enabled()) {
-                Class<? extends SubsystemBase> newClass = aClass.asSubclass(SubsystemBase.class);
-                try {
-                    subsystems.put(newClass, newClass.getConstructor(SetupResources.class).newInstance(resources));
-
-                } catch (NoSuchMethodException |
-                        InvocationTargetException |
-                        IllegalAccessException |
-                        InstantiationException e) {
-                    resources.telemetry.addLine(e.getClass().getSimpleName() +
-                            " was thrown while processing class " + newClass.getSimpleName());
+        ArrayList<Class<? extends SubsystemBase>> subsystemClasses = new ArrayList<>();
+        int classesSize = classes.size();
+        while (!classes.isEmpty()) {
+            for (Class<?> aClass : classes) {
+                if (SubsystemBase.class.isAssignableFrom(aClass) &&
+                        Objects.requireNonNull(aClass.getAnnotation(Subsystem.class)).enabled()) {
+                    Class<? extends SubsystemBase> newClass = aClass.asSubclass(SubsystemBase.class);
+                    if (newClass.getAnnotation(Dependencies.class) != null) {
+                        List<Class<? extends SubsystemBase>> dependencies = Arrays.asList(Objects.requireNonNull(newClass.getAnnotation(Dependencies.class)).subsystems());
+                        if (dependencies.size() == 0) {
+                            subsystemClasses.add(0, newClass);
+                            classes.remove(aClass);
+                        } else for (int i = 0; i < subsystemClasses.size(); i++) {
+                            dependencies.remove(subsystemClasses.get(i));
+                            if (dependencies.size() == 0) {
+                                subsystemClasses.add(i + 1, newClass);
+                                classes.remove(aClass);
+                                break;
+                            }
+                        }
+                    }
                 }
+            }
+            if (classesSize == classes.size()) {
+                for (Class<?> aClass : classes) {
+                    resources.telemetry.addLine("Could not find dependencies/loop dependencies detected while processing " + aClass.getSimpleName() + ". Skipping...");
+                }
+                break;
+            }
+        }
+
+        HashMap<Class<? extends SubsystemBase>, SubsystemBase> subsystems = new HashMap<>();
+
+        for (Class<? extends SubsystemBase> aClass : subsystemClasses) {
+            try {
+                subsystems.put(aClass, aClass.getConstructor(SetupResources.class).newInstance(resources));
+
+            } catch (NoSuchMethodException |
+                    InvocationTargetException |
+                    IllegalAccessException |
+                    InstantiationException e) {
+                resources.telemetry.addLine(e.getClass().getSimpleName() +
+                        " was thrown while processing class " + aClass.getSimpleName());
             }
         }
 
@@ -145,7 +173,7 @@ public class HardwareManager {
             }
         }
 
-        HardwareManager.loopSubsystems = loopSubsystems;
+        this.loopSubsystems = loopSubsystems;
 
         ArrayList<SubsystemBase> stopSubsystems = new ArrayList<>();
         for (SubsystemBase system : allSubsystems.values()) {
@@ -157,7 +185,7 @@ public class HardwareManager {
             }
         }
 
-        HardwareManager.stopSubsystems = stopSubsystems;
+        this.stopSubsystems = stopSubsystems;
     }
 
     /**
@@ -168,7 +196,7 @@ public class HardwareManager {
      */
     @NonNull
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private static Set<String> getAllClasses(@NonNull String packageName) {
+    private Set<String> getAllClasses(@NonNull String packageName) {
         Set<String> list = Collections.emptySet();
 
         InputStream stream = ClassLoader.getSystemClassLoader()
@@ -191,11 +219,11 @@ public class HardwareManager {
      * Loads all classes in the <code>com.firstinspires.ftc.teamcode</code> package annotated with {@link Subsystem} and/or {@link DeviceRegister}.
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private static void getAllAnnotatedClasses() {
+    private void getAllAnnotatedClasses() {
         List<Class<? extends Annotation>> annotations = Arrays.asList(Subsystem.class, DeviceRegister.class);
         HashMap<Class<? extends Annotation>, Set<Class<?>>> classes = new HashMap<>();
         for (String className : getAllClasses("org.firstinspires.ftc.teamcode")) {
-            Class<?> clazz = HardwareManager.getClass(className);
+            Class<?> clazz = getClass(className);
             if (clazz != null) {
                 for (Class<? extends Annotation> annotation : annotations) {
                     if (clazz.isAnnotationPresent(annotation)) {
@@ -207,7 +235,7 @@ public class HardwareManager {
                 }
             }
         }
-        HardwareManager.annotatedClasses = classes;
+        annotatedClasses = classes;
     }
 
     /**
@@ -217,7 +245,7 @@ public class HardwareManager {
      * @return The {@link Class} object representation of the class pointed to by the class path.
      */
     @Nullable
-    private static Class<?> getClass(@NonNull String className) {
+    private Class<?> getClass(@NonNull String className) {
         try {
             return Class.forName(className);
         } catch (ClassNotFoundException ignore) {
@@ -228,7 +256,7 @@ public class HardwareManager {
     /**
      * Forgets about all subsystems.
      */
-    static void clearSubsystems() {
+    void clearSubsystems() {
         allSubsystems.clear();
         availableSubsystems.clear();
     }
@@ -238,7 +266,7 @@ public class HardwareManager {
      *
      * @param deviceHashMap A map of the name of the device and the actual hardware device.
      */
-    private static void addDevices(@NotNull HashMap<String, HardwareDevice> deviceHashMap) {
+    private void addDevices(@NotNull HashMap<String, HardwareDevice> deviceHashMap) {
         allDevices.putAll(deviceHashMap);
         availableDevices.putAll(deviceHashMap);
     }
@@ -254,7 +282,7 @@ public class HardwareManager {
      *                  and alliance color for the device registers.
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
-    static void registerAllDevices(@NonNull SetupResources resources) {
+    void registerAllDevices(@NonNull SetupResources resources) {
         allDevices = new HashMap<>();
         availableDevices = new HashMap<>();
 
@@ -296,7 +324,7 @@ public class HardwareManager {
      * @param deviceName  The name of the device.
      * @return The the device register under deviceName of type deviceClass.
      */
-    public static <T> T getDevice(@NonNull Class<? extends T> deviceClass, String deviceName) {
+    public <T> T getDevice(@NonNull Class<? extends T> deviceClass, String deviceName) {
         deviceName = deviceName.trim();
 
         HardwareDevice device = availableDevices.remove(deviceName);
@@ -309,7 +337,7 @@ public class HardwareManager {
      *
      * @param device The device to return to the manager.
      */
-    public static void returnDevice(HardwareDevice device) {
+    public void returnDevice(HardwareDevice device) {
         for (Entry<String, HardwareDevice> entry : allDevices.entrySet()) {
             if (entry.getValue().equals(device)) {
                 availableDevices.put(entry.getKey(), device);
@@ -320,7 +348,7 @@ public class HardwareManager {
     /**
      * Forgets about all devices.
      */
-    static void clearDevices() {
+    void clearDevices() {
         allDevices.clear();
         availableDevices.clear();
     }

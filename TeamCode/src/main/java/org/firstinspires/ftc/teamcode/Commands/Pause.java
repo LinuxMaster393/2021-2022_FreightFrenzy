@@ -29,6 +29,6 @@ public class Pause extends Command {
         return Math.abs(startTime - System.nanoTime() / 1e9) > duration;
     }
 
-    public void end() {
+    public void end(SetupResources resources) {
     }
 }

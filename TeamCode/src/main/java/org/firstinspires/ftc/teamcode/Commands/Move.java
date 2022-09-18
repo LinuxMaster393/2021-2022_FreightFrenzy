@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 
 import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
-import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
 import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 
 /**
@@ -37,7 +36,7 @@ public class Move extends Command { // TODO: 3/24/22 Needs verification that thi
     public boolean start(@NonNull SetupResources resources) {
         init(resources);
 
-        drive = HardwareManager.getSubsystem(Drive.class);
+        drive = resources.hardwareManager.getSubsystem(Drive.class);
         if (drive == null) return false;
 
         double targetPosition = distance * TICKS_PER_FOOT;
@@ -88,8 +87,8 @@ public class Move extends Command { // TODO: 3/24/22 Needs verification that thi
         return isFinished;
     }
 
-    public void end() {
+    public void end(SetupResources resources) {
         drive.setBasePowers(0, 0, 0, 0);
-        HardwareManager.returnSubsystem(drive);
+        resources.hardwareManager.returnSubsystem(drive);
     }
 }

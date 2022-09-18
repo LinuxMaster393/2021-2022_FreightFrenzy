@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
 import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 import org.firstinspires.ftc.teamcode.stateMachineCore.Subsystem;
 import org.firstinspires.ftc.teamcode.stateMachineCore.SubsystemBase;
@@ -46,7 +45,7 @@ public class Camera extends SubsystemBase {
         super(resources);
 
         int cameraMonitorViewId = resources.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", resources.hardwareMap.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(HardwareManager.getDevice(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(resources.hardwareManager.getDevice(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
         webcam.setPipeline(new TestPipeline());
         webcam.setMillisecondsPermissionTimeout(2500);
