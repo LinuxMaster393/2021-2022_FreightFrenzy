@@ -6,9 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
-import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
-import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
+import org.firstinspires.ftc.teamcode.stateMachineCore.ResourceManager;
 
 /**
  * Command for activating and deactivating the duck wheel.
@@ -40,12 +38,12 @@ public class Ducks extends Command {
         runForTime = true;
     }
 
-    public boolean start(@NonNull SetupResources resources) {
-        init(resources);
+    public boolean start(@NonNull ResourceManager resourceManager) {
+        init(resourceManager);
 
         startTime = System.nanoTime() / 1e9;
 
-        duckWheel = HardwareManager.getDevice(Servo.class, "duckWheel");
+        duckWheel = resourceManager.removeDevice(Servo.class, "duckWheel");
         if (duckWheel == null) return false;
 
         ducksOn = (!runForTime && !ducksOn);
@@ -58,16 +56,13 @@ public class Ducks extends Command {
         return true;
     }
 
-    public void update() {
+    public boolean update() {
         telemetry.addData("ducks", duckWheel.getPosition());
+        return runForTime && Math.abs(startTime - System.nanoTime() / 1e9) < duration;
     }
 
-    public void end() {
+    public void stop(@NonNull ResourceManager resourceManager) {
         if (runForTime) duckWheel.setPosition(0.5);
-        HardwareManager.returnDevice(duckWheel);
-    }
-
-    public boolean isFinished()  {
-        return !runForTime || Math.abs(startTime - System.nanoTime() / 1e9) > duration;
+        resourceManager.addDevices(duckWheel);
     }
 }

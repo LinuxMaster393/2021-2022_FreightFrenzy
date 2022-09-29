@@ -6,13 +6,11 @@ import org.firstinspires.ftc.teamcode.Commands.ArmExtend;
 import org.firstinspires.ftc.teamcode.Commands.ArmRotate;
 import org.firstinspires.ftc.teamcode.Commands.Ducks;
 import org.firstinspires.ftc.teamcode.Commands.Move;
-import org.firstinspires.ftc.teamcode.Commands.ParallelCommand;
-import org.firstinspires.ftc.teamcode.Commands.SequentialCommand;
+import org.firstinspires.ftc.teamcode.Commands.Parallel;
+import org.firstinspires.ftc.teamcode.Commands.Sequential;
 import org.firstinspires.ftc.teamcode.stateMachineCore.AllianceColor;
-import org.firstinspires.ftc.teamcode.stateMachineCore.AllianceValuesBase;
 import org.firstinspires.ftc.teamcode.stateMachineCore.AutoBase;
-import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
-import org.firstinspires.ftc.teamcode.stateMachineResources.AllianceValues;
+import org.firstinspires.ftc.teamcode.Commands.Command;
 
 @Autonomous(name="AutoTest")
 public class AutoTest extends AutoBase {
@@ -20,19 +18,14 @@ public class AutoTest extends AutoBase {
         return AllianceColor.BLUE;
     }
 
-    protected Command getCommands() {
-        return new SequentialCommand(
+    protected Command getCommand() {
+        return  new Sequential(
                 new Move(2, 0, .5),
-                new ParallelCommand(
+                new Parallel(
                         new Ducks(5),
                         new ArmRotate(.8),
                         new ArmExtend(.6)
                 )
         );
-    }
-
-    @Override
-    protected AllianceValuesBase getAllianceValues() {
-        return new AllianceValues();
     }
 }

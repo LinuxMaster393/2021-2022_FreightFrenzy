@@ -15,10 +15,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
-import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
-import org.firstinspires.ftc.teamcode.stateMachineCore.Subsystem;
-import org.firstinspires.ftc.teamcode.stateMachineCore.SubsystemBase;
+import org.firstinspires.ftc.teamcode.stateMachineCore.ResourceManager;
 
 /*
  * Created by Brendan Clark on 02/27/2022 at 10:34 AM.
@@ -27,10 +24,9 @@ import org.firstinspires.ftc.teamcode.stateMachineCore.SubsystemBase;
 /**
  * Subsystem for controlling the drive system. Note: also contains the IMU.
  *
- * @see SubsystemBase
+ * @see Subsystem
  */
-@Subsystem
-public class Drive extends SubsystemBase {
+public class Drive extends Subsystem {
     private final DcMotorEx leftFront, rightFront, leftBack, rightBack;
     private final DcMotorEx[] motors;
 
@@ -49,18 +45,18 @@ public class Drive extends SubsystemBase {
      * <p>
      * "leftBack", and "rightBack" respectively, and a BNO055IMU named "imu".
      *
-     * @param resources The telemetry object for sending diagnostic information back to the driver station.
+     * @param resourceManager The telemetry object for sending diagnostic information back to the driver station.
      * @see HardwareMap
      * @see Telemetry
      */
-    public Drive(SetupResources resources) {
-        super(resources);
+    public Drive(ResourceManager resourceManager, String name, HardwareMap hardwareMap) {
+        super(resourceManager, name);
 
         motors = new DcMotorEx[]{
-                leftFront = HardwareManager.getDevice(DcMotorEx.class, "leftFront"),
-                rightFront = HardwareManager.getDevice(DcMotorEx.class, "rightFront"),
-                leftBack = HardwareManager.getDevice(DcMotorEx.class, "leftBack"),
-                rightBack = HardwareManager.getDevice(DcMotorEx.class, "rightBack")
+                leftFront = resourceManager.removeDevice(DcMotorEx.class, "leftFront"),
+                rightFront = resourceManager.removeDevice(DcMotorEx.class, "rightFront"),
+                leftBack = resourceManager.removeDevice(DcMotorEx.class, "leftBack"),
+                rightBack = resourceManager.removeDevice(DcMotorEx.class, "rightBack")
         };
         for (DcMotorEx motor : motors) {
             motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -73,7 +69,7 @@ public class Drive extends SubsystemBase {
         imuParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imuParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         imuParameters.loggingEnabled = false;
-        imu = HardwareManager.getDevice(BNO055IMU.class, "imu");
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(imuParameters);
     }
 

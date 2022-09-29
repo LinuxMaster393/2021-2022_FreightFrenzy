@@ -8,9 +8,7 @@ import androidx.annotation.NonNull;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
-import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
-import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
+import org.firstinspires.ftc.teamcode.stateMachineCore.ResourceManager;
 
 /**
  * Command for raising/lowering the arm.
@@ -25,8 +23,8 @@ public class ArmRotate extends Command { // FIXME: 3/24/22 Needs to be implement
     }
 
     @Override
-    public boolean start(@NonNull SetupResources resources) {
-        armRotator = HardwareManager.getDevice(DcMotorEx.class, "armRotator");
+    public boolean start(@NonNull ResourceManager resourceManager) {
+        armRotator = resourceManager.removeDevice(DcMotorEx.class, "armRotator");
         if (armRotator == null) return false;
 
         armRotator.setTargetPosition(position);
@@ -35,17 +33,12 @@ public class ArmRotate extends Command { // FIXME: 3/24/22 Needs to be implement
     }
 
     @Override
-    public void update() {
-
+    public boolean update() {
+        return Math.abs(position - armRotator.getCurrentPosition()) > ENCODER_POSITION_TOLERANCE;
     }
 
     @Override
-    public boolean isFinished() {
-        return Math.abs(position - armRotator.getCurrentPosition()) < ENCODER_POSITION_TOLERANCE;
-    }
-
-    @Override
-    public void end() {
-
+    public void stop(@NonNull ResourceManager resourceManager) {
+        resourceManager.addDevices(armRotator);
     }
 }

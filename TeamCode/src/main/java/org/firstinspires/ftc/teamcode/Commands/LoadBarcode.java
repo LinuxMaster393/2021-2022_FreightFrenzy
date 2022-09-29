@@ -3,9 +3,7 @@ package org.firstinspires.ftc.teamcode.Commands;
 import androidx.annotation.NonNull;
 
 import org.firstinspires.ftc.teamcode.Subsystems.Camera;
-import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
-import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
-import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
+import org.firstinspires.ftc.teamcode.stateMachineCore.ResourceManager;
 
 /**
  * Command that runs one set of commands based on the result of a previous call to
@@ -13,20 +11,22 @@ import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
  *
  * @see DetectBarcodePosition
  */
-public class LoadBarcodeCommands extends Command { // TODO: 3/24/22 Needs to be verified that this works after DetectBarcodePosition has been completed.
+public class LoadBarcode extends Command { // TODO: 3/24/22 Needs to be verified that this works after DetectBarcodePosition has been completed.
     private final Command leftCommand, centerCommand, rightCommand;
     private Command activeCommand;
 
     Camera camera;
 
-    public LoadBarcodeCommands(Command leftCommands, Command centerCommands, Command rightCommands) {
+    public LoadBarcode(Command leftCommands, Command centerCommands, Command rightCommands) {
         this.leftCommand = leftCommands;
         this.centerCommand = centerCommands;
         this.rightCommand = rightCommands;
     }
 
-    public boolean start(@NonNull SetupResources resources) {
-        camera = HardwareManager.getSubsystem(Camera.class);
+    public boolean start(@NonNull ResourceManager resourceManager) {
+        camera = resourceManager.removeSubsystem(Camera.class, "Webcam 1");
+        // Fetching camera to get the saved barcode position is stupid, we should make this
+        // kind of thing a public variable in resourceManager.
         if (camera == null || camera.getSavedBarcodePos() == null) return false;
 
         switch (camera.getSavedBarcodePos()) {
@@ -42,22 +42,18 @@ public class LoadBarcodeCommands extends Command { // TODO: 3/24/22 Needs to be 
                 return false;
         }
 
-        HardwareManager.returnSubsystem(camera);
+        resourceManager.addSubsystems(camera);
 
-        activeCommand.start(resources);
+        activeCommand.start(resourceManager);
 
         return true;
     }
 
-    public void update() {
-        activeCommand.update();
+    public boolean update() {
+        return activeCommand.update();
     }
 
-    public boolean isFinished() {
-        return activeCommand.isFinished();
-    }
-
-    public void end() {
-        activeCommand.end();
+    public void stop(@NonNull ResourceManager resourceManager) {
+        activeCommand.stop(resourceManager);
     }
 }

@@ -3,10 +3,8 @@ package org.firstinspires.ftc.teamcode.Commands;
 import androidx.annotation.NonNull;
 
 import org.firstinspires.ftc.teamcode.Subsystems.Camera;
-import org.firstinspires.ftc.teamcode.Subsystems.LedMatrixDisplays;
-import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
-import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
-import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
+import org.firstinspires.ftc.teamcode.Subsystems.LedMatrix;
+import org.firstinspires.ftc.teamcode.stateMachineCore.ResourceManager;
 
 /**
  * Command that uses the
@@ -18,14 +16,14 @@ import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
 
 public class DetectBarcodePosition extends Command { // FIXME: 3/24/22 Needs to be completely implemented.
     Camera camera;
-    LedMatrixDisplays ledMatrix;
+    LedMatrix ledMatrix;
 
     public DetectBarcodePosition() {}
 
     @Override
-    public boolean start(@NonNull SetupResources resources) {
-        camera = HardwareManager.getSubsystem(Camera.class);
-        ledMatrix = HardwareManager.getSubsystem(LedMatrixDisplays.class);
+    public boolean start(@NonNull ResourceManager resourceManager) {
+        camera = resourceManager.removeSubsystem(Camera.class, "Webcam 1");
+        ledMatrix = resourceManager.removeSubsystem(LedMatrix.class, "display");
         if (camera == null || ledMatrix == null) return false;
 
         camera.saveBarcodePos();
@@ -39,16 +37,7 @@ public class DetectBarcodePosition extends Command { // FIXME: 3/24/22 Needs to 
     }
 
     @Override
-    public void update() {}
-
-    @Override
-    public boolean isFinished() {
-        return true;
-    }
-
-    @Override
-    public void end() {
-        HardwareManager.returnSubsystem(camera);
-        HardwareManager.returnSubsystem(ledMatrix);
+    public void stop(@NonNull ResourceManager resourceManager) {
+        resourceManager.addSubsystems(camera, ledMatrix);
     }
 }

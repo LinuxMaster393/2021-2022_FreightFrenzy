@@ -2,8 +2,7 @@ package org.firstinspires.ftc.teamcode.Commands;
 
 import androidx.annotation.NonNull;
 
-import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
-import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
+import org.firstinspires.ftc.teamcode.stateMachineCore.ResourceManager;
 
 /**
  * Command for adding a delay between the previous command and the next command.
@@ -16,19 +15,13 @@ public class Pause extends Command {
         this.duration = duration;
     }
 
-    public boolean start(@NonNull SetupResources resources) {
-        init(resources);
+    public boolean start(@NonNull ResourceManager resourceManager) {
+        init(resourceManager);
         startTime = System.nanoTime() / 1e9;
         return true;
     }
 
-    public void update() {
-    }
-
-    public boolean isFinished() {
-        return Math.abs(startTime - System.nanoTime() / 1e9) > duration;
-    }
-
-    public void end() {
+    public boolean update() {
+        return Math.abs(startTime - System.nanoTime() / 1e9) < duration;
     }
 }

@@ -94,7 +94,7 @@ public class Constants {
         /**
          * The weight of the type of freight.
          */
-        double weight;
+        final double weight;
 
         /**
          * Construct a new type of freight.
@@ -110,8 +110,16 @@ public class Constants {
      */
     public enum AllianceColor {
 
-        BLUE(1, -90,.625, RevBlinkinLedDriver.BlinkinPattern.LIGHT_CHASE_BLUE),
-        RED(-1, 90,.45, RevBlinkinLedDriver.BlinkinPattern.LIGHT_CHASE_RED);
+        BLUE(1,
+                -90,
+                .625,
+                RevBlinkinLedDriver.BlinkinPattern.LIGHT_CHASE_BLUE
+        ),
+        RED(-1,
+                90,
+                .45,
+                RevBlinkinLedDriver.BlinkinPattern.LIGHT_CHASE_RED
+        );
 
         /**
          * Used to reflect autonomous programs onto the other side of the field.
@@ -121,7 +129,7 @@ public class Constants {
         /**
          * The offset of the starting angle to the field angle.
          */
-        protected final double angleOffset;
+        public final double angleOffset;
         /**
          * The horizontal distance to the position to detect the barcode position.
          */
@@ -129,7 +137,7 @@ public class Constants {
         /**
          * The pattern for the led strip while idling.
          */
-        protected final RevBlinkinLedDriver.BlinkinPattern pattern;
+        public final RevBlinkinLedDriver.BlinkinPattern pattern;
 
         /**
          * Construct an alliance.

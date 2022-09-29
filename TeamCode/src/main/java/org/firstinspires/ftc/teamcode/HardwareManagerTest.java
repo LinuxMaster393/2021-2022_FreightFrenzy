@@ -5,12 +5,10 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.Commands.Ducks;
 import org.firstinspires.ftc.teamcode.Commands.Move;
 import org.firstinspires.ftc.teamcode.Commands.Pause;
-import org.firstinspires.ftc.teamcode.Commands.SequentialCommand;
+import org.firstinspires.ftc.teamcode.Commands.Sequential;
 import org.firstinspires.ftc.teamcode.stateMachineCore.AllianceColor;
-import org.firstinspires.ftc.teamcode.stateMachineCore.AllianceValuesBase;
 import org.firstinspires.ftc.teamcode.stateMachineCore.AutoBase;
-import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
-import org.firstinspires.ftc.teamcode.stateMachineResources.AllianceValues;
+import org.firstinspires.ftc.teamcode.Commands.Command;
 
 @Autonomous(name = "HardwareManagerTest")
 public class HardwareManagerTest extends AutoBase {
@@ -20,16 +18,11 @@ public class HardwareManagerTest extends AutoBase {
     }
 
     @Override
-    protected Command getCommands() {
-        return new SequentialCommand(
+    protected Command getCommand() {
+        return new Sequential(
                 new Move(1.0, 0.5),
                 new Ducks(),
                 new Pause(2.0)
         );
-    }
-
-    @Override
-    protected AllianceValuesBase getAllianceValues() {
-        return new AllianceValues();
     }
 }

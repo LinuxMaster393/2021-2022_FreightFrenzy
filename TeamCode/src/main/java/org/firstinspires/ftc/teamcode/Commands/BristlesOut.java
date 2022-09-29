@@ -6,9 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
-import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
-import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
+import org.firstinspires.ftc.teamcode.stateMachineCore.ResourceManager;
 
 /**
  * Command for ejecting freight from the collection.
@@ -39,12 +37,12 @@ public class BristlesOut extends Command {
     }
 
     @Override
-    public boolean start(@NonNull SetupResources resources) {
-        init(resources);
+    public boolean start(@NonNull ResourceManager resourceManager) {
+        init(resourceManager);
 
         startTime = System.nanoTime() / 1e9;
 
-        collection = HardwareManager.getDevice(Servo.class, "collection");
+        collection = resourceManager.removeDevice(Servo.class, "collection");
         if (collection == null) return false;
 
         bristlesOut = (!runForTime && !bristlesOut);
@@ -59,18 +57,13 @@ public class BristlesOut extends Command {
     }
 
     @Override
-    public void update() {
-
+    public boolean update() {
+        return runForTime || Math.abs(startTime - System.nanoTime() / 1e9) < duration;
     }
 
     @Override
-    public boolean isFinished() {
-        return !runForTime || Math.abs(startTime - System.nanoTime() / 1e9) > duration;
-    }
-
-    @Override
-    public void end() {
+    public void stop(@NonNull ResourceManager resourceManager) {
         if (runForTime) collection.setPosition(0.5);
-        HardwareManager.returnDevice(collection);
+        resourceManager.addDevices(collection);
     }
 }

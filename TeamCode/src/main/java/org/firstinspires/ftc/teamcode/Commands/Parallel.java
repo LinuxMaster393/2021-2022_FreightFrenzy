@@ -2,8 +2,7 @@ package org.firstinspires.ftc.teamcode.Commands;
 
 import androidx.annotation.NonNull;
 
-import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
-import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
+import org.firstinspires.ftc.teamcode.stateMachineCore.ResourceManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,43 +15,36 @@ import java.util.Iterator;
 /**
  * Command for running multiple commands in parallel.
  */
-public class ParallelCommand extends Command {
+public class Parallel extends Command {
     final private ArrayList<Command> commands;
-    private SetupResources setupResources;
+    private ResourceManager resourceManager;
 
-    public ParallelCommand(Command... commands) {
+    public Parallel(Command... commands) {
         this.commands = new ArrayList<>(Arrays.asList(commands));
     }
 
-    public boolean start(@NonNull SetupResources resources) {
-        init(resources);
-        this.setupResources = resources;
+    public boolean start(@NonNull ResourceManager resourceManager) {
+        init(resourceManager);
+        this.resourceManager = resourceManager;
         Iterator<Command> i = commands.iterator();
         while (i.hasNext()) {
             Command command = i.next();
-            if (!command.start(resources)) {
+            if (!command.start(resourceManager)) {
                 i.remove();
             }
         }
-        return !isFinished();
+        return !commands.isEmpty();
     }
 
-    public void update() {
+    public boolean update() {
         Iterator<Command> i = commands.iterator();
         while (i.hasNext()) {
             Command command = i.next();
-            command.update();
-            if (command.isFinished()) {
-                command.end();
+            if (!command.update()) {
+                command.stop(resourceManager);
                 i.remove();
             }
         }
-    }
-
-    public boolean isFinished() {
-        return commands.isEmpty();
-    }
-
-    public void end() {
+        return !commands.isEmpty();
     }
 }

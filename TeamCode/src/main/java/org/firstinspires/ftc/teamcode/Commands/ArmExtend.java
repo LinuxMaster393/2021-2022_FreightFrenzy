@@ -7,14 +7,13 @@ import androidx.annotation.NonNull;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-import org.firstinspires.ftc.teamcode.stateMachineCore.Command;
-import org.firstinspires.ftc.teamcode.stateMachineCore.HardwareManager;
-import org.firstinspires.ftc.teamcode.stateMachineCore.SetupResources;
+import org.firstinspires.ftc.teamcode.stateMachineCore.ResourceManager;
 
 /**
  * Command for extending the arm to a percent of its max extension.
  */
 public class ArmExtend extends Command { // FIXME: 3/24/22 Needs to be implemented.
+
     int position;
 
     DcMotorEx armExtender;
@@ -24,8 +23,8 @@ public class ArmExtend extends Command { // FIXME: 3/24/22 Needs to be implement
     }
 
     @Override
-    public boolean start(@NonNull SetupResources resources) {
-        armExtender = HardwareManager.getDevice(DcMotorEx.class, "armExtender");
+    public boolean start(@NonNull ResourceManager resourceManager) {
+        armExtender = resourceManager.removeDevice(DcMotorEx.class, "armExtender");
         if (armExtender == null) return false;
 
         armExtender.setTargetPosition(position);
@@ -34,17 +33,12 @@ public class ArmExtend extends Command { // FIXME: 3/24/22 Needs to be implement
     }
 
     @Override
-    public void update() {
-
+    public boolean update() {
+        return Math.abs(position - armExtender.getCurrentPosition()) > ENCODER_POSITION_TOLERANCE;
     }
 
     @Override
-    public boolean isFinished() {
-        return Math.abs(position - armExtender.getCurrentPosition()) < ENCODER_POSITION_TOLERANCE;
-    }
-
-    @Override
-    public void end() {
-
+    public void stop(@NonNull ResourceManager resourceManager) {
+        resourceManager.addDevices(armExtender);
     }
 }
